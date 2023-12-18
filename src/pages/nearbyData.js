@@ -10,7 +10,7 @@ import { Alert } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Paper } from "@mui/material";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from "leaflet";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -25,11 +25,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
+import { SearchField } from "../searchField";
+import Chip from '@mui/material/Chip';
+import { yellow } from "@mui/material/colors";
 
 export function Nearby() {
   const mymap = React.useRef();
   const [radioValue, setRadioValue] = React.useState("nearby");
   const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  const [placeText, setPlace] = React.useState("你的位置")
 
   const [stationNearbyBtn, setStationNearbyBtn] = React.useState(
     <>
@@ -47,6 +52,8 @@ export function Nearby() {
   const [stationNearbyBikes, setStationNearbyBikes] = React.useState([]);
 
   const [locationMark, setLocationMark] = React.useState(<></>);
+
+  const [currentLocation, setCurrentLocation] = React.useState([0, 0])
 
   const redIcon = new L.Icon({
     iconUrl:
@@ -70,6 +77,38 @@ export function Nearby() {
   });
 
 
+
+  function getNearByBikeData(lat, lon) {
+    getData(
+      `https://tdx.transportdata.tw/api/advanced/v2/Bike/Station/NearBy?%24spatialFilter=nearby%28${lat}%2C%20${lon}%2C%201000%29&%24format=JSON`,
+      (res) => {
+        console.log(res);
+        var list = [];
+        for (var i = 0; i < res.length; i++) {
+          list.push({
+            id: res[i].StationUID,
+            name: res[i].StationName.Zh_tw,
+          });
+        }
+        setStationNearby(res);
+
+
+        setCurrentLocation([lat, lon])
+      },
+
+    );
+
+    getData(
+      `https://tdx.transportdata.tw/api/advanced/v2/Bike/Availability/NearBy?%24spatialFilter=nearby%28${lat}%2C%20${lon}%2C%201000%29&%24format=JSON`,
+      (res) => {
+        console.log(res);
+        setStationNearbyBikes(res);
+      },
+      e => { alert("error") }
+    );
+  }
+
+
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
@@ -81,46 +120,18 @@ export function Nearby() {
       //loc.coords.longitude
       console.log(loc);
       setStationNearbyBtn(<></>);
-      getData(
-        `https://tdx.transportdata.tw/api/advanced/v2/Bike/Station/NearBy?%24spatialFilter=nearby%28${loc.coords.latitude}%2C%20${loc.coords.longitude}%2C%201000%29&%24format=JSON`,
-        (res) => {
-          console.log(res);
-          var list = [];
-          for (var i = 0; i < res.length; i++) {
-            list.push({
-              id: res[i].StationUID,
-              name: res[i].StationName.Zh_tw,
-            });
-
-
-          }
-          setStationNearby(res);
-          setLocationMark(
-            <>
-              <Marker
-                position={[loc.coords.latitude, loc.coords.longitude]}
-                icon={redIcon}
-              >
-                <Popup>你的位置</Popup>
-              </Marker>
-            </>
-          );
-          mymap.current.setView(
-            [loc.coords.latitude, loc.coords.longitude],
-            14
-          );
-        },
-
+      setLocationMark(
+        <>
+          <Marker
+            position={[loc.coords.latitude, loc.coords.longitude]}
+            icon={redIcon}
+          >
+            <Popup>你的位置</Popup>
+          </Marker>
+        </>
       );
-
-      getData(
-        `https://tdx.transportdata.tw/api/advanced/v2/Bike/Availability/NearBy?%24spatialFilter=nearby%28${loc.coords.latitude}%2C%20${loc.coords.longitude}%2C%201000%29&%24format=JSON`,
-        (res) => {
-          console.log(res);
-          setStationNearbyBikes(res);
-        },
-        { useLocalCatch: false }
-      );
+      mymap.current.setView([loc.coords.latitude, loc.coords.longitude], 16)
+      getNearByBikeData(loc.coords.latitude, loc.coords.longitude)
     }
     function errorFunction() {
       //if(localStorage.getItem("dialog.getLocationError.show") === "true" || !localStorage.getItem("dialog.getLocationError.show")){
@@ -128,6 +139,23 @@ export function Nearby() {
       //}
     }
   }
+  const MapEvents = () => {
+    useMapEvents({
+      // click(e) {
+      //   // setState your coords here
+      //   // coords exist in "e.latlng.lat" and "e.latlng.lng"
+      //   var loc = [e.latlng.lat, e.latlng.lng]
+      //   let marker = L.marker(loc, { icon: greenIcon }).addTo(mymap.current);
+
+      //   marker.bindPopup("標記的位置")
+      //   mymap.current.flyTo(loc, 16)
+
+      //   marker.addEventListener("click", (e) => { console.log(e) })
+      // },
+
+    })
+    return false;
+  };
 
   React.useEffect(() => {
     getLocation();
@@ -143,8 +171,8 @@ export function Nearby() {
           dragging={!L.Browser.mobile}
           scrollWheelZoom={false}
           center={[23.75518176611264, 120.9406086935125]}
-          zoom={7}
-          style={{ width: "100%", height: "35vh" }}
+          zoom={11}
+          style={{ width: "100%", height: "60vh" }}
         >
           <TileLayer
             attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "<br/>使用兩指移動與縮放地圖" : ""
@@ -152,19 +180,49 @@ export function Nearby() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {locationMark}
-
+          <MapEvents />
           {
-            stationNearby.map(function (res, index) {
-              return (
-                <Marker
-                  key={"marker-" + index}
-                  position={[res.StationPosition.PositionLat, res.StationPosition.PositionLon]}
-                  icon={greenIcon}
-                >
-                  <Popup>{res.StationName.Zh_tw.replace("_", " ")}</Popup>
-                </Marker>
-              )
-            })
+            stationNearby.length > 0 ?
+              stationNearby.map(function (res, index) {
+                return (
+                  <Marker
+                    eventHandlers={{
+                      click: (e) => {
+                        console.log('marker clicked', e)
+                      },
+                    }}
+                    key={"marker-" + index}
+                    position={[res.StationPosition.PositionLat, res.StationPosition.PositionLon]}
+                    icon={greenIcon}
+                  >
+                    <Popup>
+                      {res.StationName.Zh_tw.replace("_", " ")}
+                      <p>
+                        {stationNearbyBikes[index] ? (
+                          stationNearbyBikes[index].ServiceStatus === 1 ?
+                            (
+                              <>
+                                一般:{stationNearbyBikes[index].AvailableRentBikesDetail.GeneralBikes}<br />
+                                {stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes > 0 ? <>電輔:{stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes}<br /></> : <></>}
+                                空位:{stationNearbyBikes[index].AvailableReturnBikes}<br />
+                              </>
+                            )
+                            :
+                            stationNearbyBikes[index].ServiceStatus === 0 ?
+                              (
+                                <>停止營運</>
+                              )
+                              : (<>暫停營運</>)
+                        ) : (
+                          <CircularProgress size="1rem" />
+                        )}
+                      </p>
+                      <Link to={`/bike/station/?lat=${res.StationPosition.PositionLon}&lon=${res.StationPosition.PositionLat}&uid=${res.StationUID}`}>詳細資料</Link>
+                    </Popup>
+                  </Marker>
+                )
+              })
+              : <></>
           }
         </MapContainer>
         <p></p>
@@ -172,71 +230,70 @@ export function Nearby() {
           <Card sx={{ mt: 0, pt: 0 }}>
             <CardContent>
               <Typography variant="h5" component="div">
-                附近站點:
+                附近的站點:
               </Typography>
               <Typography sx={{ mb: 1.5 }} color="text.secondary"></Typography>
-              <Typography variant="body2" component="div">
-                {stationNearbyBtn}
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ p: 0.5 }}>類型</TableCell>
-                        <TableCell sx={{ p: 0.5 }}>名稱</TableCell>
-                        <TableCell sx={{ p: 0.5 }}>狀態</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {stationNearby.map(function (res, index) {
-                        return (
 
-                          <TableRow
-                            key={res.StationUID}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell component="th" scope="row" sx={{ p: 0.5 }}>
-                              {res.StationName.Zh_tw.split("_")[0]}
-                            </TableCell>
-                            <TableCell component="th" scope="row" sx={{ p: 0.5 }}>
-                              <Link
-                                to={`/bike/station/?lat=${res.StationPosition.PositionLon}&lon=${res.StationPosition.PositionLat}&uid=${res.StationUID}`}
-                              >
-                                {res.StationName.Zh_tw.split("_")[1]}
-                              </Link>
-                            </TableCell>
-                            <TableCell component="th" scope="row" sx={{ p: 0.5 }}>
-                              {stationNearbyBikes[index] ? (
-                                stationNearbyBikes[index].ServiceStatus === 1 ?
-                                  (
-                                    <>
-                                      一般:{stationNearbyBikes[index].AvailableRentBikesDetail.GeneralBikes}<br />
-                                      電輔:{stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes}<br />
-                                      空位:{stationNearbyBikes[index].AvailableReturnBikes}<br />
-                                    </>
-                                  )
-                                  :
-                                  stationNearbyBikes[index].ServiceStatus === 0 ?
-                                    (
-                                      <>停止營運</>
-                                    )
-                                    : (<>暫停營運</>)
-                              ) : (
-                                <CircularProgress size="1rem" />
-                              )}
-                            </TableCell>
-                          </TableRow>
+              {
+                stationNearby.length > 0 ?
+                  stationNearby.map(function (res, index) {
+                    return (
 
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Typography>
+                      <Card
+                        key={res.StationUID}
+                        sx={{
+                          m: 1, p: 1
+                        }}
+                      >
+                        <Box sx={{ display: "flex" }}>
+
+
+                          <Chip label={res.StationName.Zh_tw.split("_")[0]} sx={{ background: yellow[200] }} />
+                          <Button variant="text" component={Link} to={`/bike/station/?lat=${res.StationPosition.PositionLon}&lon=${res.StationPosition.PositionLat}&uid=${res.StationUID}`}>
+                            {res.StationName.Zh_tw.split("_")[1]}
+
+                          </Button>
+
+                        </Box>
+                        <Box sx={{ p: 0.5 }}>
+                          {stationNearbyBikes[index] ? (
+                            stationNearbyBikes[index].ServiceStatus === 1 ?
+                              (
+                                <>
+                                  一般:{stationNearbyBikes[index].AvailableRentBikesDetail.GeneralBikes}<br />
+                                  {stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes > 0 ? <>電輔:{stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes}<br /></> : <></>}
+                                  空位:{stationNearbyBikes[index].AvailableReturnBikes}<br />
+                                </>
+                              )
+                              :
+                              stationNearbyBikes[index].ServiceStatus === 0 ?
+                                (
+                                  <>停止營運</>
+                                )
+                                : (<>暫停營運</>)
+                          ) : (
+                            <CircularProgress size="1rem" />
+                          )}
+                        </Box>
+                      </Card>
+
+                    );
+                  })
+                  : <>
+
+                    <Card
+
+                      sx={{
+                        m: 1, p: 1
+                      }}
+                    >
+                      找不到任何站點
+                    </Card>
+                  </>
+              }
             </CardContent>
           </Card></Box>
-      </Box>
+      </Box >
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}

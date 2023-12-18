@@ -29,35 +29,42 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import { Link } from 'react-router-dom';
 
 export function Recent() {
-    const [recentData, setRecantData] = React.useState([])
+  const [recentData, setRecantData] = React.useState([])
 
 
-    React.useEffect(() => {
-        var localData = localStorage.getItem("recentData")
-        if (localData) {
-            setRecantData(JSON.parse(localData))
-        } else {
-            localStorage.setItem("recentData", "[]")
-        }
-    }, [])
+  React.useEffect(() => {
+    var localData = localStorage.getItem("recentData")
+    if (localData) {
+      setRecantData(JSON.parse(localData))
+    } else {
+      localStorage.setItem("recentData", "[]")
+    }
+  }, [])
 
-    return (
-        <>
-            <TopAppBar title="最近查詢"></TopAppBar>
-            <Box sx={{ p: 3 }}>
-                {recentData.length < 1 ? <>無資料</> : <></>}
-                <List>
+  return (
+    <>
+      <TopAppBar title="最近查詢"></TopAppBar>
+      <Box sx={{ p: 3 }}>
+        {recentData.length < 1 ? <>無資料</> : <></>}
+        <List>
 
-                    {
-                        recentData.map((d, i) => {
-                            return <ListItem key={i}>{d.StationName}</ListItem>
-                        })
-                    }
+          {
+            recentData.map((d, i) => {
+              return (
+                <ListItem key={i}>
+                  <ListItemButton component={Link} to={`/bike/station/?lat=${d.StationPosition[1]}&lon=${d.StationPosition[0]}`}>
+                    <ListItemText primary={d.StationName} />
+                  </ListItemButton>
+                </ListItem>
+              )
+            })
+          }
 
-                </List>
-            </Box>
-        </>
-    )
+        </List>
+      </Box>
+    </>
+  )
 }

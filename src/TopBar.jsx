@@ -40,8 +40,8 @@ export function TopAppBar(props) {
             <Divider />
             <List>
                 {navItems.map((item, i) => (
-                    <ListItem key={item} disablePadding components={Link} to={routes[i]}>
-                        <ListItemButton sx={{ textAlign: 'center' }}>
+                    <ListItem key={item} disablePadding>
+                        <ListItemButton sx={{ textAlign: 'center' }} component={Link} to={routes[i]}>
                             <ListItemText primary={item} />
                         </ListItemButton>
                     </ListItem>

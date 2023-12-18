@@ -10,6 +10,7 @@ import BikeRoot from './pages/BikeRoot';
 import BikeStation from './pages/BikeStation';
 import { Nearby } from './pages/nearbyData';
 import { Recent } from './pages/recentData';
+import { Search } from './pages/search';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
           <Route path='/' element={<BikeRoot />} ></Route>
           <Route path='/nearby' element={<Nearby />} ></Route>
           <Route path='/recent' element={<Recent />} ></Route>
+          <Route path='/search' element={<Search />} ></Route>
           <Route path='/bike/station/' element={<BikeStation />} ></Route>
           <Route path='*' element={<Err404 />} ></Route>
         </Routes>

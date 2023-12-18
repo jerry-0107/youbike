@@ -20,7 +20,7 @@ async function getData(tdxUrl, callback, errorCallback) {
                 localStorage.setItem("loginAccess", JSON.stringify(data))
             },
             error: function (xhr, textStatus, thrownError) {
-                errorCallback()
+                errorCallback(textStatus, thrownError)
             }
         });
     }

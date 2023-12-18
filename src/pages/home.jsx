@@ -10,7 +10,7 @@ import { Alert } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Paper } from "@mui/material";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from "leaflet";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -68,6 +68,25 @@ function BikeRoot() {
     popupAnchor: [1, -34],
     shadowSize: [41, 41],
   });
+
+  const MapEvents = () => {
+    useMapEvents({
+      click(e) {
+        // setState your coords here
+        // coords exist in "e.latlng.lat" and "e.latlng.lng"
+        var loc = [e.latlng.lat, e.latlng.lng]
+        let marker = L.marker(loc, { icon: greenIcon }).addTo(mymap.current);
+
+        marker.bindPopup("標記的位置")
+        mymap.current.flyTo(loc, 16)
+
+        marker.addEventListener("click", (e) => { console.log(e) })
+
+
+      }
+    })
+    return false;
+  };
 
 
   function getLocation() {
@@ -152,6 +171,7 @@ function BikeRoot() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {locationMark}
+          <MapEvents />
 
           {
             stationNearby.map(function (res, index) {

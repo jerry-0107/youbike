@@ -10,21 +10,23 @@ import { Box, Autocomplete, TextField, Button } from "@mui/material";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import CircularProgress from "@mui/material/CircularProgress";
 import { AppBar, Toolbar } from '@mui/material'
 import BoltIcon from '@mui/icons-material/Bolt';
-import LinearProgress from '@mui/material/LinearProgress';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Divider from '@mui/material/Divider';
 import dayjs from 'dayjs';
 import Chip from '@mui/material/Chip';
-import { json } from 'react-router';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { styled } from '@mui/material/styles';
+import CircularProgress, {
+  circularProgressClasses,
+} from '@mui/material/CircularProgress';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+
 
 
 export default function BikeStation() {
@@ -32,7 +34,7 @@ export default function BikeStation() {
   const [bikeStationCardTitle, setBikeStationCardTitle] = React.useState()
   const [bikeStationCardSubTitle, setBikeStationCardSubTitle] = React.useState()
   const [bikeStationCardBody, setBikeStationCardBody] = React.useState()
-  const [bikeData, setBikeData] = React.useState()
+  const [bikeData, setBikeData] = React.useState({ SrcUpdateTime: "NULL" })
   const [bikeStationData, setBikeStationData] = React.useState()
   const [topbar, setTopbar] = React.useState(<></>)
   const [progress, setProgress] = React.useState(0);
@@ -45,17 +47,34 @@ export default function BikeStation() {
       result = url.searchParams.get(name);
     return result
   }
+  const [open, setOpen] = React.useState(false);
+
+
+  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+    height: 1,
+    borderRadius: 5,
+    [`&.${linearProgressClasses.colorPrimary}`]: {
+      backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+    },
+    [`& .${linearProgressClasses.bar}`]: {
+      borderRadius: 5,
+      backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
+    },
+    ...theme
+  }));
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   function recordRecentData(data) {
     var recentData = JSON.parse(localStorage.getItem("recentData"))
-    if (recentData) {
-      var oldData = Array(recentData)
-      console.log(oldData)
-      oldData = oldData.push(data)
+    if (recentData[0]) {
+      var oldData = (recentData)
+      oldData.push(data)
       localStorage.setItem("recentData", JSON.stringify(oldData))
     } else {
       var newData = JSON.stringify([data])
-      console.log(newData)
       localStorage.setItem("recentData", (newData))
     }
   }
@@ -74,11 +93,12 @@ export default function BikeStation() {
   function getBikeData() {
     getData(
       `https://tdx.transportdata.tw/api/advanced/v2/Bike/Availability/NearBy?%24spatialFilter=nearby%28${UrlParam("lon")}%2C%20${UrlParam("lat")}%2C%201%29&%24format=JSON&top=1`,
-      (res2) => { setBikeData(res2) },)
+      (res2) => { setBikeData(res2) },
+      (...errors) => { setOpen(true); console.log(errors) })
   }
 
   React.useEffect(() => {
-    if (!UrlParam("lat") || !UrlParam("lon") || !UrlParam("uid")) {
+    if (!UrlParam("lat") || !UrlParam("lon")) {// || !UrlParam("uid")) {
       setTopbar(<TopAppBar title={"找不到站點"} />)
       setBikeStationCardTitle("找不到站點")
       setBikeStationCardSubTitle("網址無效")
@@ -134,14 +154,15 @@ export default function BikeStation() {
   React.useEffect(() => {
     if (bikeData && bikeStationData) {
       var res = bikeStationData
-      console.log(res)
+      console.log(res, bikeData)
       if (res.length === 0) {
         setCountdown(-1)
         setTopbar(<TopAppBar title={"找不到站點"} />)
         setBikeStationCardTitle("找不到站點")
         setBikeStationCardSubTitle("請檢查輸入")
         setTransferTab("資料讀取失敗")
-      } else {
+      } else if (bikeData.length > 0 && bikeStationData.length > 0) {
+
         if (bikeData[0].ServiceStatus === 0) {
           setBikeStationCardSubTitle(<Chip color="error" label="停止營運" />)
           setCountdown(-1)
@@ -159,6 +180,7 @@ export default function BikeStation() {
           setBikeStationCardSubTitle(<Chip color="error" label="暫停營運" />)
           setCountdown(-1)
         }
+
 
         setBikeStationCardBody(
           <>
@@ -214,9 +236,8 @@ export default function BikeStation() {
             </Box>
             <p>最後更新: {dayjs(bikeData.SrcUpdateTime).format("HH:mm:ss")}</p>
           </>)
-
-
-
+      } else {
+        // alert("page load failed")
       }
     }
   }, [bikeData, bikeStationData])
@@ -247,14 +268,37 @@ export default function BikeStation() {
       <AppBar position="fixed" color="secondary" sx={{ top: 'auto', bottom: 0, height: 'auto', display: (countdown < 0 ? "none" : "unset") }} >
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <BoltIcon sx={{ verticalAlign: 'middle' }} /> 即時車位資料 / {countdown}秒
+            <BoltIcon sx={{ verticalAlign: 'middle' }} /> 即時車位資料 | {countdown}秒後更新
             <Box sx={{ width: '100%' }}>
-              <LinearProgress variant="determinate" value={progress} />
+              <LinearProgress value={progress} variant="determinate" />
             </Box>
           </Typography>
         </Toolbar>
       </AppBar>
       <Toolbar />
+
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"發生錯誤，無法更新資料"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            更新 即時車位資料 時出錯<br />
+            我們將持續嘗試更新資料<br />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            確定
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
