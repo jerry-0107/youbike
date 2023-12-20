@@ -26,6 +26,7 @@ import CircularProgress, {
   circularProgressClasses,
 } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { YouBikeImage } from '../youbikeImage';
 
 
 
@@ -231,7 +232,7 @@ export default function BikeStation() {
             }}
               component="div">
               <div style={{ textAlign: "center", flexGrow: "1" }}>
-                <img src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br />一般<br />
+                <YouBikeImage src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br />一般<br />
                 <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1, height: "100%" }}>
                   {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
                     <>{
@@ -242,7 +243,7 @@ export default function BikeStation() {
               <Divider component="div" orientation="vertical" variant="middle" flexItem />
               {bikeData[0].AvailableRentBikesDetail.ElectricBikes > 0 ? <>
                 <div style={{ textAlign: "center", flexGrow: "1" }}>
-                  <img src='/youbike/Youbike2.0E.svg' style={{ height: "2.5em" }} alt='2.0E可借車輛' /><br />電輔<br />
+                  <YouBikeImage src='/youbike/Youbike2.0E.svg' style={{ height: "2.5em" }} alt='2.0E可借車輛' /><br />電輔<br />
                   <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
                     {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
                       <>{bikeData[0].AvailableRentBikesDetail.ElectricBikes}</>}</Typography>
@@ -250,7 +251,7 @@ export default function BikeStation() {
                 <Divider component="div" orientation="vertical" variant="middle" flexItem />
               </> : <></>}
               <div style={{ textAlign: "center", flexGrow: "1" }}>
-                <img src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br />空位<br />
+                <YouBikeImage src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br />空位<br />
                 <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
                   {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
                     bikeData[0].AvailableReturnBikes < 1 ? <span style={{ color: "red" }}>{bikeData[0].AvailableReturnBikes}</span> : bikeData[0].AvailableReturnBikes}</Typography></div>

@@ -1,10 +1,8 @@
 import * as React from 'react'
-import Backdrop from '@mui/material/Backdrop';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Route, Routes } from 'react-router-dom'
-import { Home } from './pages/home';
 import { Err404 } from './pages/error404';
 import BikeRoot from './pages/BikeRoot';
 import BikeStation from './pages/BikeStation';
@@ -42,8 +40,8 @@ function App() {
   );
 
   const currentTheme = (
-    localStorage.getItem("theme") == "light" ? lightTheme :
-      localStorage.getItem("theme") == "dark" ? darkTheme :
+    localStorage.getItem("theme") === "light" ? lightTheme :
+      localStorage.getItem("theme") === "dark" ? darkTheme :
         systemTheme
   )
 

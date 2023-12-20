@@ -31,6 +31,7 @@ import { yellow } from "@mui/material/colors";
 
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
+import { YouBikeImage } from "../youbikeImage";
 
 function BikeRoot() {
   const mymap = React.useRef();
@@ -176,8 +177,6 @@ function BikeRoot() {
       dragend: (e) => {
         console.log("mapCenter", e.target.getCenter());
         getNearByBikeData(e.target.getCenter().lat, e.target.getCenter().lng)
-
-
       }
     })
     return false;
@@ -228,7 +227,7 @@ function BikeRoot() {
           <Grid container spacing={2}>
             <Grid xs={6}>
               <GridItem>
-                <img src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br /><b>車輛最多</b><br />
+                <YouBikeImage src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br /><b>車輛最多</b><br />
                 {moreData.moreBike.stationName == "NULL" ? <>無資料</> :
                   <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
                     <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
@@ -240,7 +239,7 @@ function BikeRoot() {
             </Grid>
             <Grid xs={6}>
               <GridItem>
-                <img src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br /><b>空位最多</b><br />
+                <YouBikeImage src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br /><b>空位最多</b><br />
                 {moreData.moreSpace.stationName == "NULL" ? <>無資料</> : <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
                   <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
                 </> : <>
