@@ -67,7 +67,7 @@ export function Search() {
             {stationNearby.map((d, i) => {
               return (
                 <ListItem key={i}>
-                  <ListItemButton component={Link} to={`/bike/station/?lat=${d.StationPosition.PositionLon}&lon=${d.StationPosition.PositionLat}`}>
+                  <ListItemButton component={Link} to={`/bike/station/?uid=${d.StationUID}`}>
                     <ListItemText primary={d.StationName.Zh_tw} />
                   </ListItemButton>
 
