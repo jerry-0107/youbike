@@ -29,12 +29,17 @@ import { SearchField } from "../searchField";
 import Chip from '@mui/material/Chip';
 import { yellow } from "@mui/material/colors";
 
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Unstable_Grid2';
+
 function BikeRoot() {
   const mymap = React.useRef();
-  const [radioValue, setRadioValue] = React.useState("nearby");
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  const [placeText, setPlace] = React.useState("你的位置")
+
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const [moreData, setMoreData] = React.useState({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
 
   const [stationNearbyBtn, setStationNearbyBtn] = React.useState(
     <>
@@ -77,8 +82,17 @@ function BikeRoot() {
   });
 
 
+  const GridItem = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  }));
+
 
   function getNearByBikeData(lat, lon) {
+    setIsLoading(true)
     getData(
       `https://tdx.transportdata.tw/api/advanced/v2/Bike/Station/NearBy?%24spatialFilter=nearby%28${lat}%2C%20${lon}%2C%201000%29&%24format=JSON`,
       (res) => {
@@ -91,25 +105,30 @@ function BikeRoot() {
           });
         }
         setStationNearby(res);
-
+        setIsLoading(false)
 
         setCurrentLocation([lat, lon])
       },
+      () => setIsLoading(false)
 
     );
 
     getData(
       `https://tdx.transportdata.tw/api/advanced/v2/Bike/Availability/NearBy?%24spatialFilter=nearby%28${lat}%2C%20${lon}%2C%201000%29&%24format=JSON`,
       (res) => {
+        setIsLoading(false)
         console.log(res);
         setStationNearbyBikes(res);
+
+
       },
-      e => { alert("error") }
+      e => { alert("error"); setIsLoading(false) }
     );
   }
 
 
   function getLocation() {
+    setIsLoading(true)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
     } else {
@@ -117,6 +136,7 @@ function BikeRoot() {
     }
 
     function successFunction(loc) {
+      setIsLoading(false)
       //loc.coords.longitude
       console.log(loc);
       setStationNearbyBtn(<></>);
@@ -134,6 +154,7 @@ function BikeRoot() {
       getNearByBikeData(loc.coords.latitude, loc.coords.longitude)
     }
     function errorFunction() {
+      setIsLoading(false)
       //if(localStorage.getItem("dialog.getLocationError.show") === "true" || !localStorage.getItem("dialog.getLocationError.show")){
       setDialogOpen(true); //無論如何
       //}
@@ -166,11 +187,71 @@ function BikeRoot() {
     getLocation();
   }, []);
 
+  React.useEffect(() => {
+    if (stationNearby.length > 0 && stationNearbyBikes.length > 0 && stationNearby.length === stationNearbyBikes.length) {
+      console.log(stationNearby, stationNearbyBikes, "000")
+      var moreBike = 0, moreSpace = 0;
+      var theMoreBikeStation = [], theMoreSpaceStation = []
+      for (let i = 0; i < stationNearbyBikes.length; i++) {
+        if (stationNearbyBikes[i].ServiceStatus === 1 && stationNearby[i].StationName.Zh_tw) {
+          if (stationNearbyBikes[i].AvailableRentBikes > moreBike) {
+            theMoreBikeStation[0] = stationNearby[i].StationName.Zh_tw
+            theMoreBikeStation[1] = stationNearbyBikes[i].AvailableRentBikes
+            moreBike = stationNearbyBikes[i].AvailableRentBikes
+          }
+          if (stationNearbyBikes[i].AvailableReturnBikes > moreSpace) {
+            theMoreSpaceStation[0] = stationNearby[i].StationName.Zh_tw
+            theMoreSpaceStation[1] = stationNearbyBikes[i].AvailableReturnBikes
+            moreSpace = stationNearbyBikes[i].AvailableReturnBikes
+          }
+        }
+      }
+
+      if (theMoreBikeStation.length > 0) {
+        setMoreData({ moreBike: { stationName: theMoreBikeStation[0], bikes: theMoreBikeStation[1] }, moreSpace: { stationName: theMoreSpaceStation[0], space: theMoreSpaceStation[1] } })
+      }
+      else {
+        setMoreData({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
+      }
+    } else {
+      setMoreData({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
+    }
+  }, [stationNearby, stationNearbyBikes])
+
   return (
     <>
-      <TopAppBar title="公共自行車"></TopAppBar>
+      <TopAppBar title="YouBike 站點查詢" isLoading={isLoading} />
       <Box sx={{ p: 3 }}>
         <SearchField location={currentLocation} />
+        <p></p>
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid container spacing={2}>
+            <Grid xs={6}>
+              <GridItem>
+                <img src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br /><b>車輛最多</b><br />
+                {moreData.moreBike.stationName == "NULL" ? <>無資料</> :
+                  <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
+                    <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
+                  </> : <>
+                    <Typography >{moreData.moreBike.stationName.split("_")[0]} {moreData.moreBike.stationName.split("_")[1]}</Typography>
+                  </>}<Typography >{moreData.moreBike.bikes}輛車</Typography></>}
+
+              </GridItem>
+            </Grid>
+            <Grid xs={6}>
+              <GridItem>
+                <img src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br /><b>空位最多</b><br />
+                {moreData.moreSpace.stationName == "NULL" ? <>無資料</> : <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
+                  <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
+                </> : <>
+                  <Typography >{moreData.moreBike.stationName.split("_")[0]} {moreData.moreBike.stationName.split("_")[1]}</Typography>
+                </>}<Typography >{moreData.moreSpace.space}個空位</Typography></>}
+              </GridItem>
+
+            </Grid>
+
+          </Grid>
+        </Box>
         <p></p>
         <MapContainer
           ref={mymap}
@@ -182,7 +263,7 @@ function BikeRoot() {
         >
           <TileLayer
             attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "<br/>使用兩指移動與縮放地圖" : ""
-              }`}
+              }<br/>移動地圖來查看其他站點`}
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {locationMark}
@@ -223,7 +304,7 @@ function BikeRoot() {
                           <CircularProgress size="1rem" />
                         )}
                       </p>
-                      <Link to={`/bike/station/?lat=${res.StationPosition.PositionLon}&lon=${res.StationPosition.PositionLat}&uid=${res.StationUID}`}>詳細資料</Link>
+                      <Link to={`/bike/station/?uid=${res.StationUID}`}>詳細資料</Link>
                     </Popup>
                   </Marker>
                 )
@@ -238,7 +319,9 @@ function BikeRoot() {
               <Typography variant="h5" component="div">
                 附近的站點:
               </Typography>
-              <Typography sx={{ mb: 1.5 }} color="text.secondary"></Typography>
+              <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                {stationNearby.length > 0 ? <>附近有 {stationNearby.length} 個站點</> : <>找不到任何站點</>}
+              </Typography>
 
               {
                 stationNearby.length > 0 ?
@@ -253,13 +336,12 @@ function BikeRoot() {
                       >
                         <Box sx={{ display: "flex" }}>
 
-
-                          <Chip label={res.StationName.Zh_tw.split("_")[0]} sx={{ background: yellow[200] }} />
-                          <Button variant="text" component={Link} to={`/bike/station/?lat=${res.StationPosition.PositionLon}&lon=${res.StationPosition.PositionLat}&uid=${res.StationUID}`}>
-                            {res.StationName.Zh_tw.split("_")[1]}
-
-                          </Button>
-
+                          {res.StationName.Zh_tw.split("_").length < 2 ? <>
+                            <Typography variant="h6" component="h6">{res.StationName.Zh_tw.split("_")[0]}</Typography>
+                          </> : <>
+                            <Chip label={res.StationName.Zh_tw.split("_")[0]} sx={{ background: yellow[200], me: 1 }} />
+                            <Typography variant="h6" component="h6">{res.StationName.Zh_tw.split("_")[1]}</Typography>
+                          </>}
                         </Box>
                         <Box sx={{ p: 0.5 }}>
                           {stationNearbyBikes[index] ? (
@@ -280,21 +362,22 @@ function BikeRoot() {
                           ) : (
                             <CircularProgress size="1rem" />
                           )}
+                          <div>
+                            <Button variant="text" onClick={() => {
+                              mymap.current.setView([res.StationPosition.PositionLat, res.StationPosition.PositionLon], 18);
+                              window.scrollTo(0, 0)
+                            }}>在地圖上顯示</Button>
+
+                            <Button variant="contained" component={Link} to={`/bike/station/?uid=${res.StationUID}`}>
+                              更多資訊
+                            </Button>
+                          </div>
                         </Box>
                       </Card>
 
                     );
                   })
                   : <>
-
-                    <Card
-
-                      sx={{
-                        m: 1, p: 1
-                      }}
-                    >
-                      找不到任何站點
-                    </Card>
                   </>
               }
             </CardContent>
@@ -311,24 +394,7 @@ function BikeRoot() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" component="div">
-            我們無法使用你的定位資訊，這可能是因為
-            {navigator.geolocation ? (
-              <>
-                你之前拒絕了我們的定位請求
-                <br />
-                如果要啟用定位，請到
-                <Paper sx={{ p: 0.5 }}>
-                  瀏覽器設定&gt;網站設定&gt;{window.location.origin}
-                </Paper>
-                開啟定位服務，接著刷新此頁面
-              </>
-            ) : (
-              <>
-                你的裝置不支援我們的技術
-                <br />
-                請嘗試更新瀏覽器，或在其他裝置上再試一次
-              </>
-            )}
+            我們無法使用你的定位資訊，你將無法使用我們所提供的部分功能
           </DialogContentText>
         </DialogContent>
         <DialogActions>

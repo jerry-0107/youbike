@@ -15,13 +15,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
+import { LinearProgress } from '@mui/material';
 
 const drawerWidth = 240;
-const navItems = ['首頁', '附近站點', '最近查詢'];
-const routes = ["/", "/nearby", "/recent"]
+const navItems = ['首頁', "搜尋", '最近查詢'];
+const routes = ["/", "/search", "/recent"]
 
 export function TopAppBar(props) {
     const { window } = props;
+    const { isLoading } = props;
+    const { title } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => {
@@ -29,13 +32,13 @@ export function TopAppBar(props) {
     };
 
     React.useEffect(() => {
-        document.title = "YouBike 站點查詢"
-    }, [])
+        document.title = `${title} - YouBike 站點查詢`
+    }, [title])
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
             <Typography variant="h6" sx={{ my: 2 }}>
-                YouBike 站點查詢
+                {title}
             </Typography>
             <Divider />
             <List>
@@ -53,7 +56,7 @@ export function TopAppBar(props) {
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <>   <Box sx={{ display: 'flex' }}>
             <CssBaseline />
             <AppBar component="nav">
                 <Toolbar>
@@ -71,7 +74,7 @@ export function TopAppBar(props) {
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}
                     >
-                        YouBike 站點查詢
+                        {title}
                     </Typography>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                         {navItems.map((item, i) => (
@@ -100,7 +103,11 @@ export function TopAppBar(props) {
                     {drawer}
                 </Drawer>
             </nav>
+
         </Box>
+            <div hidden={!isLoading}>
+                <LinearProgress variant="indeterminate" /></div>
+        </>
     );
 }
 

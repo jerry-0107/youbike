@@ -36,11 +36,11 @@ export default function BikeStation() {
   const [bikeStationCardBody, setBikeStationCardBody] = React.useState()
   const [bikeData, setBikeData] = React.useState({ SrcUpdateTime: "NULL" })
   const [bikeStationData, setBikeStationData] = React.useState()
-  const [topbar, setTopbar] = React.useState(<></>)
+  const [topbarTitle, setTopbarTitle] = React.useState("Loading...")
   const [progress, setProgress] = React.useState(0);
   const [stationID, setStationID] = React.useState()
   const [countdown, setCountdown] = React.useState(60)
-  var locXY = []
+  const [isLoading, setIsLoading] = React.useState(false)
   const [transferTab, setTransferTab] = React.useState(<><center><CircularProgress size="2rem" /><br />資料讀取中</center></>)
   function UrlParam(name) {
     var url = new URL(window.location.href),
@@ -48,6 +48,7 @@ export default function BikeStation() {
     return result
   }
   const [open, setOpen] = React.useState(false);
+
 
 
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
@@ -69,10 +70,15 @@ export default function BikeStation() {
 
   function recordRecentData(data) {
     var recentData = JSON.parse(localStorage.getItem("recentData"))
-    if (recentData[0]) {
+    if (recentData) {
+      if (recentData.length > 99) {
+        recentData.reverse().pop()
+        recentData.reverse()
+      }
       var oldData = (recentData)
       oldData.push(data)
       localStorage.setItem("recentData", JSON.stringify(oldData))
+
     } else {
       var newData = JSON.stringify([data])
       localStorage.setItem("recentData", (newData))
@@ -90,41 +96,56 @@ export default function BikeStation() {
     shadowSize: [41, 41],
   });
 
-  function getBikeData() {
-    getData(
-      `https://tdx.transportdata.tw/api/advanced/v2/Bike/Availability/NearBy?%24spatialFilter=nearby%28${UrlParam("lon")}%2C%20${UrlParam("lat")}%2C%201%29&%24format=JSON&top=1`,
-      (res2) => { setBikeData(res2) },
-      (...errors) => { setOpen(true); console.log(errors) })
+  function getCityName(stationUID) {
+
+    var cityCode = stationUID.slice(0, 3)
+    var citys = ["Taichung", "Hsinchu", "MiaoliCounty", "NewTaipei", "PingtungCounty", "KinmenCounty", "Taoyuan", "Taipei", "Kaohsiung", "Tainan", "Chiayi", "HsinchuCounty"]
+    var codes = ["TXG", "HSZ", "MIA", "NWT", "PIF", "KIN", "TAO", "TPE", "KHH", "TNN", "CYI", "HSQ"]
+    return (citys[codes.indexOf(cityCode)])
   }
 
+  function getBikeData() {
+    setIsLoading(true)
+    getData(
+      `https://tdx.transportdata.tw/api/basic/v2/Bike/Availability/City/${getCityName(UrlParam("uid"))}?%24filter=StationUID%20eq%20%27${UrlParam("uid")}%27&%24format=JSON`,
+      (res2) => { setBikeData(res2); setIsLoading(false) },
+      (...errors) => { setOpen(true); console.log(errors); setIsLoading(false) })
+  }
+
+
+
+
   React.useEffect(() => {
-    if (!UrlParam("lat") || !UrlParam("lon")) {// || !UrlParam("uid")) {
-      setTopbar(<TopAppBar title={"找不到站點"} />)
+    if (!UrlParam("uid")) {
+      setTopbarTitle("找不到站點")
       setBikeStationCardTitle("找不到站點")
       setBikeStationCardSubTitle("網址無效")
       setTransferTab("資料讀取失敗")
       setCountdown(-1)
     }
     else {
+      setIsLoading(true)
       getData(
-        `https://tdx.transportdata.tw/api/advanced/v2/Bike/Station/NearBy?%24spatialFilter=nearby%28${UrlParam("lon")}%2C%20${UrlParam("lat")}%2C%201%29&%24format=JSON&top=1`,
+        `https://tdx.transportdata.tw/api/basic/v2/Bike/Station/City/${getCityName(UrlParam("uid"))}?%24filter=StationUID%20eq%20%27${UrlParam("uid")}%27&%24format=JSON`,
         (res) => {
+          setIsLoading(false)
           if (res.length) {
-            recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), StationPosition: [UrlParam("lon"), UrlParam("lat")] })
+            recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), uid: UrlParam("uid") })
 
             setBikeStationData(res)
-            setTopbar(<TopAppBar title={res[0].StationName.Zh_tw.replace("_", " ")} />)
+            setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
             setBikeStationCardTitle(res[0].StationName.Zh_tw.replace("_", " "))
             setBikeStationCardSubTitle(<></>)
           } else {
             setCountdown(-1)
-            setTopbar(<TopAppBar title={"找不到站點"} />)
+            setTopbarTitle("找不到站點")
             setBikeStationCardTitle("找不到站點")
             setBikeStationCardSubTitle("請檢查輸入")
             setTransferTab("資料讀取失敗")
           }
 
-        },)
+
+        }, () => setIsLoading(false))
       getBikeData()
     }
   }, [])
@@ -157,7 +178,7 @@ export default function BikeStation() {
       console.log(res, bikeData)
       if (res.length === 0) {
         setCountdown(-1)
-        setTopbar(<TopAppBar title={"找不到站點"} />)
+        setTopbarTitle("找不到站點")
         setBikeStationCardTitle("找不到站點")
         setBikeStationCardSubTitle("請檢查輸入")
         setTransferTab("資料讀取失敗")
@@ -184,7 +205,7 @@ export default function BikeStation() {
 
         setBikeStationCardBody(
           <>
-            <LocationOnIcon sx={{ verticalAlign: "bottom" }} />{res[0].StationAddress.Zh_tw}
+            <LocationOnIcon sx={{ verticalAlign: "bottom" }} />{res[0].StationAddress.Zh_tw ? res[0].StationAddress.Zh_tw : "沒有地址資料"}
             <p></p>
             <MapContainer
               dragging={!L.Browser.mobile}
@@ -246,16 +267,15 @@ export default function BikeStation() {
 
   return (
     <>
-      {topbar}
+      <TopAppBar title={topbarTitle} isLoading={isLoading} />
       <Box sx={{ m: 0, p: 3 }}>
         <Card sx={{ mt: 0, pt: 0 }}>
           <CardContent>
             <Typography variant="h5" component="div">
-              <Typography sx={{ mr: 1, display: "inline-block", width: "1.5rem", height: "1.5rem", borderRadius: "5px", verticalAlign: "text-top", background: "linear-gradient(315deg, #ffef00,#fff647)" }} variant='div' ></Typography>
+              <Typography component="div" sx={{ mr: 1, display: "inline-block", width: "1.5rem", height: "1.5rem", borderRadius: "5px", verticalAlign: "text-top", background: "linear-gradient(315deg, #ffef00,#fff647)" }} variant='div' ></Typography>
               {bikeStationCardTitle}
-
             </Typography>
-            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            <Typography sx={{ mb: 1.5 }} color="text.secondary" component={"div"}>
               {bikeStationCardSubTitle}
             </Typography>
             <Typography variant="body2" component="div">

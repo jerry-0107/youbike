@@ -11,9 +11,12 @@ import BikeStation from './pages/BikeStation';
 import { Nearby } from './pages/nearbyData';
 import { Recent } from './pages/recentData';
 import { Search } from './pages/search';
+import { getapikey } from './getApiKey';
 
 
 function App() {
+
+  const [isConnected, setIsConnected] = React.useState(false)
 
   const darkTheme = createTheme({
     palette: {
@@ -44,22 +47,28 @@ function App() {
         systemTheme
   )
 
+  React.useEffect(() => {
+    getapikey(setIsConnected)
+  }, [])
+
 
 
 
   return (
     <>
-      <ThemeProvider theme={currentTheme}>
-        <CssBaseline />
-        <Routes>
-          <Route path='/' element={<BikeRoot />} ></Route>
-          <Route path='/nearby' element={<Nearby />} ></Route>
-          <Route path='/recent' element={<Recent />} ></Route>
-          <Route path='/search' element={<Search />} ></Route>
-          <Route path='/bike/station/' element={<BikeStation />} ></Route>
-          <Route path='*' element={<Err404 />} ></Route>
-        </Routes>
-      </ThemeProvider>
+      {isConnected ?
+        <ThemeProvider theme={currentTheme}>
+          <CssBaseline />
+          <Routes>
+            <Route path='/' element={<BikeRoot />} ></Route>
+            <Route path='/nearby' element={<Nearby />} ></Route>
+            <Route path='/recent' element={<Recent />} ></Route>
+            <Route path='/search' element={<Search />} ></Route>
+            <Route path='/bike/station/' element={<BikeStation />} ></Route>
+            <Route path='*' element={<Err404 />} ></Route>
+          </Routes>
+        </ThemeProvider>
+        : <>連線中...</>}
     </>
   );
 }
