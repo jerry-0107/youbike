@@ -254,14 +254,13 @@ function BikeRoot() {
         <p></p>
         <MapContainer
           ref={mymap}
-          dragging={!L.Browser.mobile}
-          scrollWheelZoom={false}
+           scrollWheelZoom={false}
           center={[23.75518176611264, 120.9406086935125]}
           zoom={11}
           style={{ width: "100%", height: "60vh" }}
         >
           <TileLayer
-            attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "<br/>使用兩指移動與縮放地圖" : ""
+            attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "" : ""
               }<br/>移動地圖來查看其他站點`}
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
