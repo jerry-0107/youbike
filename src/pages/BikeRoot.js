@@ -205,7 +205,6 @@ function BikeRoot() {
           }
         }
       }
-
       if (theMoreBikeStation.length > 0) {
         setMoreData({ moreBike: { stationName: theMoreBikeStation[0], bikes: theMoreBikeStation[1] }, moreSpace: { stationName: theMoreSpaceStation[0], space: theMoreSpaceStation[1] } })
       }
@@ -240,10 +239,10 @@ function BikeRoot() {
             <Grid xs={6}>
               <GridItem>
                 <YouBikeImage src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br /><b>空位最多</b><br />
-                {moreData.moreSpace.stationName == "NULL" ? <>無資料</> : <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
-                  <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
+                {moreData.moreSpace.stationName == "NULL" ? <>無資料</> : <>{moreData.moreSpace.stationName.split("_").length < 2 ? <>
+                  <Typography >{moreData.moreSpace.stationName.split("_")[0]}</Typography>
                 </> : <>
-                  <Typography >{moreData.moreBike.stationName.split("_")[0]} {moreData.moreBike.stationName.split("_")[1]}</Typography>
+                  <Typography >{moreData.moreSpace.stationName.split("_")[0]} {moreData.moreSpace.stationName.split("_")[1]}</Typography>
                 </>}<Typography >{moreData.moreSpace.space}個空位</Typography></>}
               </GridItem>
 
