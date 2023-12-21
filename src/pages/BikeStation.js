@@ -232,7 +232,7 @@ export default function BikeStation() {
             }}
               component="div">
               <div style={{ textAlign: "center", flexGrow: "1" }}>
-                <YouBikeImage src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br />一般<br />
+                <YouBikeImage src='/youbike/YouBike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br />一般<br />
                 <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1, height: "100%" }}>
                   {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
                     <>{
@@ -243,7 +243,7 @@ export default function BikeStation() {
               <Divider component="div" orientation="vertical" variant="middle" flexItem />
               {bikeData[0].AvailableRentBikesDetail.ElectricBikes > 0 ? <>
                 <div style={{ textAlign: "center", flexGrow: "1" }}>
-                  <YouBikeImage src='/youbike/Youbike2.0E.svg' style={{ height: "2.5em" }} alt='2.0E可借車輛' /><br />電輔<br />
+                  <YouBikeImage src='/youbike/YouBike2.0E.svg' style={{ height: "2.5em" }} alt='2.0E可借車輛' /><br />電輔<br />
                   <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
                     {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
                       <>{bikeData[0].AvailableRentBikesDetail.ElectricBikes}</>}</Typography>

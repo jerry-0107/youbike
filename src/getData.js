@@ -1,4 +1,3 @@
-
 import { getapikey } from './getApiKey';
 
 async function getData(tdxUrl, callback, errorCallback) {

@@ -227,7 +227,7 @@ function BikeRoot() {
           <Grid container spacing={2}>
             <Grid xs={6}>
               <GridItem>
-                <YouBikeImage src='/youbike/Youbike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br /><b>車輛最多</b><br />
+                <YouBikeImage src='/youbike/YouBike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br /><b>車輛最多</b><br />
                 {moreData.moreBike.stationName == "NULL" ? <>無資料</> :
                   <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
                     <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
@@ -254,7 +254,7 @@ function BikeRoot() {
         <p></p>
         <MapContainer
           ref={mymap}
-           scrollWheelZoom={false}
+          scrollWheelZoom={false}
           center={[23.75518176611264, 120.9406086935125]}
           zoom={11}
           style={{ width: "100%", height: "60vh" }}
