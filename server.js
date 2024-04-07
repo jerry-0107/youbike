@@ -80,7 +80,7 @@ function getApiKeyFromDB() {
 
 
 
-var getApiKey = cron.schedule('10 * * * *', () => {
+var getApiKey = cron.schedule('17 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
@@ -98,8 +98,6 @@ var getApiKey = cron.schedule('10 * * * *', () => {
 
       sql_Connect.getConnection(function (err, connection) {
         connection.query(`
-            DELETE FROM APIkey
-             WHERE id > 1;
              INSERT INTO APIkey (apiKey)
              VALUES(?);
                 `[JSON.stringify(data)], function (error, results, fields) {
