@@ -3,15 +3,15 @@ import { getapikey } from './getApiKey';
 async function getData(tdxUrl, callback, errorCallback) {
     console.log("[GET DATA]\nfrom: ", tdxUrl, "\ngetTdxData.js")
 
-    if (!localStorage.getItem("loginAccess")) {
-        await getapikey()
-    }
-    var accesstoken = JSON.parse(localStorage.getItem("loginAccess"));
+    // if (!localStorage.getItem("loginAccess")) {
+    //     await getapikey()
+    // }
+    // var accesstoken = JSON.parse(localStorage.getItem("loginAccess"));
 
-    fetch("/api/get/" + tdxUrl, {
-        method: "GET",
-        headers: {
-            "authorization": "Bearer " + accesstoken.access_token,
+    fetch("/api/get", {
+        method: "POST",
+        body: {
+            apiurl: tdxUrl
         }
     })
         .then(res => res.json())
