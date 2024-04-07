@@ -47,15 +47,15 @@ async function getapikey(callback) {
 }
 
 app.post(/^\/api\/get/, (req, res) => {
-  var apikey =
-    fetch(req.apiurl, {
-      method: "GET",
-      headers: {
-        "authorization": "Bearer " + accesstoken.access_token,
-      }
+  var apikey = getApiKeyFromDB()
+  fetch(req.apiurl, {
+    method: "GET",
+    headers: {
+      "authorization": "Bearer " + apikey,
+    }
 
-    }).then(r => r.json())
-      .then(res.send(r))
+  }).then(r => r.json())
+    .then(res.send(r))
 })
 
 app.get('*', (req, res) => {
@@ -81,7 +81,7 @@ function getApiKeyFromDB() {
 
 
 
-var getApiKey = cron.schedule('46 * * * *', () => {
+var getApiKey = cron.schedule('54 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
