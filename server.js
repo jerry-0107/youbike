@@ -47,17 +47,21 @@ var sql_Connect = mysql.createPool({
 // }
 
 app.post(/^\/api\/get/, async (req, res) => {
-  var apikey = await getApiKeyFromDB()
-  console.log(apikey)
-  console.log(req.body.apiurl)
-  fetch(req.body.apiurl, {
-    method: "GET",
-    headers: {
-      "authorization": "Bearer " + apikey,
-    }
+  await getApiKeyFromDB(
+    function (apikey) {
+      console.log(apikey)
+      console.log(req.body.apiurl)
+      fetch(req.body.apiurl, {
+        method: "GET",
+        headers: {
+          "authorization": "Bearer " + apikey,
+        }
 
-  }).then(r => r.json())
-    .then(r => res.send(r))
+      }).then(r => r.json())
+        .then(r => res.send(r))
+    }
+  )
+
 })
 
 app.get('*', (req, res) => {
@@ -65,7 +69,7 @@ app.get('*', (req, res) => {
 })
 
 
-async function getApiKeyFromDB() {
+async function getApiKeyFromDB(callback) {
   var temp = ""
   sql_Connect.getConnection(async function (err, connection) {
     connection.query(`
@@ -75,6 +79,7 @@ async function getApiKeyFromDB() {
       console.log(results[0]);
       temp = results[0].apiKey;
       connection.release();
+      callback(temp)
       return temp;
     })
   })
@@ -129,7 +134,7 @@ var getApiKey = cron.schedule('22 * * * *', () => {
           sql_Connect.getConnection(function (err, connection2) {
             connection2.query(`
                  DELETE FROM APIkey
-                  WHERE id > 1;
+                  WHERE id > 0;
 
               `, function (error2, results2, fields) {
               if (error2) {
