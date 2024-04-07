@@ -48,6 +48,7 @@ var sql_Connect = mysql.createPool({
 
 app.post(/^\/api\/get/, (req, res) => {
   var apikey = getApiKeyFromDB()
+  confirm.log(apikey)
   console.log(req.body.apiurl)
   fetch(req.body.apiurl, {
     method: "GET",
