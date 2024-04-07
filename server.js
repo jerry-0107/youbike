@@ -10,8 +10,12 @@ app.use(express.static('./build'));
 // app.use(express.json());
 
 app.get(/^\/api\/get/, (req, res) => {
-    console.log(req.path)
-    res.send({ status: 200 })
+    console.log(req.path + req.params)
+    fetch(req.path.replace("/api/get/", ""), {
+        method: "GET",
+
+    }).then(r => r.json())
+        .then(res.send(r))
 })
 
 app.get('*', (req, res) => {

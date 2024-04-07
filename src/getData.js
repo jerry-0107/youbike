@@ -8,7 +8,7 @@ async function getData(tdxUrl, callback, errorCallback) {
     }
     var accesstoken = JSON.parse(localStorage.getItem("loginAccess"));
 
-    fetch(tdxUrl, {
+    fetch("/api/get/" + tdxUrl, {
         method: "GET",
         headers: {
             "authorization": "Bearer " + accesstoken.access_token,

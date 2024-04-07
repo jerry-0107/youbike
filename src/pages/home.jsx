@@ -110,8 +110,6 @@ function BikeRoot() {
               id: res[i].StationUID,
               name: res[i].StationName.Zh_tw,
             });
-
-
           }
           setStationNearby(res);
           setLocationMark(
