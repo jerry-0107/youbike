@@ -55,8 +55,8 @@ function App() {
   return (
     <>
       {isConnected ?
-        <ThemeProvider theme={currentTheme}>
-          <CssBaseline />
+      
+      
           <Routes>
             <Route path='/' element={<BikeRoot />} ></Route>
             <Route path='/nearby' element={<Nearby />} ></Route>
@@ -65,7 +65,7 @@ function App() {
             <Route path='/bike/station/' element={<BikeStation />} ></Route>
             <Route path='*' element={<Err404 />} ></Route>
           </Routes>
-        </ThemeProvider>
+    
         : <>連線中...</>}
     </>
   );
