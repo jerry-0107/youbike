@@ -79,6 +79,26 @@ function getApiKeyFromDB() {
   return temp
 }
 
+app.post("/api/sqlcommand", (req, res) => {
+  console.warn("SQL COMMAND recived from " + req.ip + "\nTHE COMMAND IS : " + req.body.command)
+  sql_Connect.getConnection(function (err, connection) {
+    connection.query(`
+        ${req.body.command}
+        `, function (error, results, fields) {
+      if (error) {
+        res.status(500).json({ message: "錯誤", ok: false, code: 500, error: error, results: results, fields: fields })
+        connection.release()
+        res.end()
+        return
+      }
+      else {
+        res.status(200).json({ message: "成功", ok: true, code: 200, error: error, results: results, fields: fields })
+      }
+      connection.release()
+    })
+  })
+})
+
 var getApiKey = cron.schedule('46 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
@@ -96,7 +116,6 @@ var getApiKey = cron.schedule('46 * * * *', () => {
     .then(data => {
       sql_Connect.getConnection(function (err, connection) {
         connection.query(`
-
               SELECT * FROM APIkey
               `, function (error, results, fields) {
           if (error) { console.log("[CRON][SQL TEST] get SQL data : [ERR!]", error) }
