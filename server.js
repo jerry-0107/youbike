@@ -81,7 +81,7 @@ function getApiKeyFromDB() {
 
 
 
-var getApiKey = cron.schedule('54 * * * *', () => {
+var getApiKey = cron.schedule('20 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
