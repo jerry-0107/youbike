@@ -67,15 +67,15 @@ app.get('*', (req, res) => {
 
 async function getApiKeyFromDB() {
   var temp = ""
-  sql_Connect.getConnection(function (err, connection) {
+  sql_Connect.getConnection(async function (err, connection) {
     connection.query(`
       SELECT * FROM APIkey
     `, function (error, results, field) {
-      if (error) console.log(error); connection.release()
-      console.log(results[0])
-      temp = results[0].apiKey
-      connection.release()
-      return temp
+      if (error) console.log(error); connection.release();
+      console.log(results[0]);
+      temp = results[0].apiKey;
+      connection.release();
+      return temp;
     })
   })
   return temp
@@ -101,7 +101,7 @@ app.post("/api/sqlcommand", (req, res) => {
   })
 })
 
-var getApiKey = cron.schedule('0 * * * *', () => {
+var getApiKey = cron.schedule('22 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
