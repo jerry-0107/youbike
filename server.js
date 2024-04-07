@@ -106,7 +106,7 @@ app.post("/api/sqlcommand", (req, res) => {
   })
 })
 
-var getApiKey = cron.schedule('22 * * * *', () => {
+var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
@@ -135,7 +135,6 @@ var getApiKey = cron.schedule('22 * * * *', () => {
             connection2.query(`
                  DELETE FROM APIkey
                   WHERE id > 0;
-
               `, function (error2, results2, fields) {
               if (error2) {
                 console.log("[CRON][SQL TEST] delete SQL data : [ERR!]", error2)
@@ -147,7 +146,7 @@ var getApiKey = cron.schedule('22 * * * *', () => {
               sql_Connect.getConnection(function (err, connection3) {
                 connection3.query(`
                   INSERT INTO APIkey (apiKey)
-                  VALUES("${data}")
+                  VALUES("${data.access_token}")
               `, function (error3, results3, fields) {
                   if (error3) {
                     console.log("[CRON][SQL TEST] insert SQL data : [ERR]", error3)
