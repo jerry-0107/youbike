@@ -10,6 +10,9 @@ async function getData(tdxUrl, callback, errorCallback) {
 
     fetch("/api/get", {
         method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ apiurl: tdxUrl })
     })
         .then(res => res.json())
