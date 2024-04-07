@@ -12,7 +12,7 @@ import ListItemText from '@mui/material/ListItemText';
 
 
 export function Search() {
-
+  const [isLoading, setIsLoading] = React.useState(false)
   const [stationNearby, setStationNearby] = React.useState([]);
   const [stationNearbyBikes, setStationNearbyBikes] = React.useState([]);
 
@@ -20,6 +20,7 @@ export function Search() {
 
   const [currentLocation, setCurrentLocation] = React.useState([0, 0])
   function getBikeData() {
+    setIsLoading(true)
     getData(
       `https://tdx.transportdata.tw/api/basic/v2/Bike/Station/City/${UrlParam('city')}?%24filter=contains%28StationName%2FZh_tw%20%2C%20%27${UrlParam("q")}%27%29&%24format=JSON`,
       (res) => {
@@ -32,7 +33,7 @@ export function Search() {
           });
         }
         setStationNearby(res);
-
+        setIsLoading(false)
       },
 
     );
@@ -58,17 +59,17 @@ export function Search() {
   }, [])
   return (
     <>
-      <TopAppBar title="公共自行車"></TopAppBar>
+      <TopAppBar title="公共自行車" isLoading={isLoading}></TopAppBar>
       <Box sx={{ p: 3 }}>
-        <SearchField useAinsteadOfLink={true} defaultValue={[UrlParam("q"), UrlParam("city")]} />
+        <SearchField useAinsteadOfLink={true} defaultValue={[UrlParam("q"), UrlParam("city")]} setIsLoading={setIsLoading} />
         <div>
-          {UrlParam("q") && UrlParam("city") ? <p>共有 {stationNearby.length} 項結果</p> : <p>輸入關鍵字及地區，進行搜尋</p>}
+          {UrlParam("q") && UrlParam("city") ? isLoading ? <p>正在搜尋...</p> : <p>共有 {stationNearby.length} 項結果</p> : <p>輸入關鍵字及地區，進行搜尋</p>}
           <List>
             {stationNearby.map((d, i) => {
               return (
                 <ListItem key={i}>
                   <ListItemButton component={Link} to={`/bike/station/?uid=${d.StationUID}`}>
-                    <ListItemText primary={d.StationName.Zh_tw} />
+                    <ListItemText primary={d.StationName.Zh_tw.replace("_", " ")} />
                   </ListItemButton>
 
                 </ListItem>

@@ -220,7 +220,7 @@ function BikeRoot() {
     <>
       <TopAppBar title="YouBike 站點查詢" isLoading={isLoading} />
       <Box sx={{ p: 3 }}>
-        <SearchField location={currentLocation} />
+        <SearchField location={currentLocation} setIsLoading={setIsLoading} />
         <p></p>
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>

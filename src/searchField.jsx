@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Link } from 'react-router-dom';
 
-export function SearchField({ location, useAinsteadOfLink, defaultValue }) {
+export function SearchField({ location, useAinsteadOfLink, defaultValue, setIsLoading }) {
     const [city, setCity] = React.useState(defaultValue ? defaultValue[1] : "");
     const [keyword, setKeyword] = React.useState(defaultValue ? defaultValue[0] : "")
     const linkRef = React.useRef()
@@ -28,6 +28,7 @@ export function SearchField({ location, useAinsteadOfLink, defaultValue }) {
         else if (!useAinsteadOfLink) {
             linkRef.current.click()
         } else {
+            if (setIsLoading) { setIsLoading(true) }
             window.location.href = `/search/?q=${keyword}&city=${city}`
         }
     }
