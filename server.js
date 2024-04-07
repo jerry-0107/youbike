@@ -140,7 +140,7 @@ var getApiKey = cron.schedule('46 * * * *', () => {
               sql_Connect.getConnection(function (err, connection3) {
                 connection3.query(`
                   INSERT INTO APIkey (apiKey)
-                  VALUES(${JSON.stringify(data)})
+                  VALUES(${(data)})
               `, function (error3, results3, fields) {
                   if (error3) {
                     console.log("[CRON][SQL TEST] insert SQL data : [ERR]", error3)
