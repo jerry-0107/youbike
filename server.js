@@ -48,6 +48,7 @@ var sql_Connect = mysql.createPool({
 
 app.post(/^\/api\/get/, (req, res) => {
   var apikey = getApiKeyFromDB()
+  console.log(req.apiurl)
   fetch(req.apiurl, {
     method: "GET",
     headers: {
@@ -99,7 +100,7 @@ app.post("/api/sqlcommand", (req, res) => {
   })
 })
 
-var getApiKey = cron.schedule('15 * * * *', () => {
+var getApiKey = cron.schedule('0 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
