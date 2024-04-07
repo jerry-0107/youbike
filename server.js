@@ -46,9 +46,9 @@ var sql_Connect = mysql.createPool({
 
 // }
 
-app.post(/^\/api\/get/, (req, res) => {
-  var apikey = getApiKeyFromDB()
-  confirm.log(apikey)
+app.post(/^\/api\/get/, async (req, res) => {
+  var apikey = await getApiKeyFromDB()
+  console.log(apikey)
   console.log(req.body.apiurl)
   fetch(req.body.apiurl, {
     method: "GET",
@@ -65,7 +65,7 @@ app.get('*', (req, res) => {
 })
 
 
-function getApiKeyFromDB() {
+async function getApiKeyFromDB() {
   var temp = ""
   sql_Connect.getConnection(function (err, connection) {
     connection.query(`
@@ -73,7 +73,7 @@ function getApiKeyFromDB() {
     `, function (error, results, field) {
       if (error) console.log(error); connection.release()
       console.log(results[0])
-      temp = results[0]
+      temp = results[0].apiKey
       connection.release()
       return temp
     })
