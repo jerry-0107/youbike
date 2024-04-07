@@ -72,6 +72,7 @@ function getApiKeyFromDB() {
       if (error) console.log(error); connection.release()
       console.log(results[0])
       temp = results[0]
+      connection.release()
       return temp
     })
   })
@@ -80,7 +81,7 @@ function getApiKeyFromDB() {
 
 
 
-var getApiKey = cron.schedule('17 * * * *', () => {
+var getApiKey = cron.schedule('25 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
