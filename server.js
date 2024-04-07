@@ -81,7 +81,7 @@ function getApiKeyFromDB() {
 
 
 
-var getApiKey = cron.schedule('25 * * * *', () => {
+var getApiKey = cron.schedule('32 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
@@ -101,7 +101,7 @@ var getApiKey = cron.schedule('25 * * * *', () => {
         connection.query(`
              INSERT INTO APIkey (apiKey)
              VALUES(?);
-                `[JSON.stringify(data)], function (error, results, fields) {
+                `, [JSON.stringify(data)], function (error, results, fields) {
           if (error) {
             console.error("Error:", error);
             connection.release()
