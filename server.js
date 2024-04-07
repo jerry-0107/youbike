@@ -81,7 +81,7 @@ function getApiKeyFromDB() {
 
 
 
-var getApiKey = cron.schedule('32 * * * *', () => {
+var getApiKey = cron.schedule('41 * * * *', () => {
   var tdxLogin = {
     grant_type: "client_credentials",
     client_id: "jerry20200815-905e4c2d-f4f9-42dd",
@@ -96,23 +96,74 @@ var getApiKey = cron.schedule('32 * * * *', () => {
   })
     .then(response => response.json())
     .then(data => {
-
       sql_Connect.getConnection(function (err, connection) {
         connection.query(`
-             INSERT INTO APIkey (apiKey)
-             VALUES(?);
-                `, [JSON.stringify(data)], function (error, results, fields) {
-          if (error) {
-            console.error("Error:", error);
-            connection.release()
-            return
-          }
+
+              SELECT * FROM APIkey
+              `, function (error, results, fields) {
+          if (error) { console.log("[CRON][SQL TEST] get SQL data : [ERR!]", error) }
           else {
-            console.log("API KEY 取得成功")
+            console.log("[CRON][SQL TEST] get SQL data : SUCCESS")
           }
           connection.release()
+
+          sql_Connect.getConnection(function (err, connection2) {
+            connection2.query(`
+                 DELETE FROM APIkey
+                  WHERE id > 1;
+
+              `, function (error2, results2, fields) {
+              if (error2) {
+                console.log("[CRON][SQL TEST] delete SQL data : [ERR!]", error2)
+              } else {
+                console.log("[CRON][SQL TEST] delete SQL data : SUCCESS")
+              }
+              connection2.release()
+
+              sql_Connect.getConnection(function (err, connection3) {
+                connection3.query(`
+                  INSERT INTO APIkey (apiKey)
+                  VALUES(${JSON.stringify(data)})
+              `, function (error3, results3, fields) {
+                  if (error3) {
+                    console.log("[CRON][SQL TEST] insert SQL data : [ERR]", error3)
+
+                  } else {
+                    console.log("API KEY 取得成功")
+                    console.log("[CRON][SQL TEST] insert SQL data : SUCCESS")
+                  }
+                  connection3.release()
+                })
+              })
+            })
+          })
         })
       })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     })
     .catch(error => {
