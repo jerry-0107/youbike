@@ -57,7 +57,7 @@ app.post(/^\/api\/get/, async (req, res) => {
     }
 
   }).then(r => r.json())
-    .then(res.send(r))
+    .then(r => res.send(r))
 })
 
 app.get('*', (req, res) => {
