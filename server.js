@@ -7,6 +7,7 @@ const mysql = require('mysql2');
 app.use(bodyParser.json());
 app.use(express.static('./build'));
 var cron = require('node-cron');
+var apikey = ""
 // app.use(express.json());
 
 var sql_Connect = mysql.createPool({
@@ -47,21 +48,36 @@ var sql_Connect = mysql.createPool({
 // }
 
 app.post(/^\/api\/get/, async (req, res) => {
-  await getApiKeyFromDB(
-    function (apikey) {
-      console.log(apikey)
-      console.log(req.body.apiurl)
-      fetch(req.body.apiurl, {
-        method: "GET",
-        headers: {
-          "authorization": "Bearer " + apikey,
-        }
 
-      }).then(r => r.json())
-        .then(r => res.send(r))
-    }
-  )
+  if (apikey === "") {
+    await getApiKeyFromDB(
+      function (_apikey) {
+        apikey = _apikey
+        console.log(_apikey)
+        console.log(req.body.apiurl)
+        fetch(req.body.apiurl, {
+          method: "GET",
+          headers: {
+            "authorization": "Bearer " + _apikey,
+          }
 
+        }).then(r => r.json())
+          .then(r => res.send(r))
+      }
+    )
+  } else {
+
+    console.log(apikey)
+    console.log(req.body.apiurl)
+    fetch(req.body.apiurl, {
+      method: "GET",
+      headers: {
+        "authorization": "Bearer " + apikey,
+      }
+
+    }).then(r => r.json())
+      .then(r => res.send(r))
+  }
 })
 
 app.get('*', (req, res) => {
@@ -152,6 +168,7 @@ var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
                     console.log("[CRON][SQL TEST] insert SQL data : [ERR]", error3)
 
                   } else {
+                    apikey = data.access_token
                     console.log("API KEY 取得成功")
                     console.log("[CRON][SQL TEST] insert SQL data : SUCCESS")
                   }
