@@ -9,7 +9,7 @@ import BikeStation from './pages/BikeStation';
 import { Nearby } from './pages/nearbyData';
 import { Recent } from './pages/recentData';
 import { Search } from './pages/search';
-import { getapikey } from './getApiKey';
+
 
 
 function App() {
@@ -46,28 +46,25 @@ function App() {
   )
 
   React.useEffect(() => {
-    getapikey(setIsConnected)
+    if (window.location.href.includes("vercel.app")) {
+      window.location.href = "https://youbike-production-0320.up.railway.app/" + window.location.pathname + window.location.search
+    } else {
+
+    }
   }, [])
 
 
 
 
   return (
-    <>
-      {isConnected ?
-      
-      
-          <Routes>
-            <Route path='/' element={<BikeRoot />} ></Route>
-            <Route path='/nearby' element={<Nearby />} ></Route>
-            <Route path='/recent' element={<Recent />} ></Route>
-            <Route path='/search' element={<Search />} ></Route>
-            <Route path='/bike/station/' element={<BikeStation />} ></Route>
-            <Route path='*' element={<Err404 />} ></Route>
-          </Routes>
-    
-        : <>連線中...</>}
-    </>
+    <Routes>
+      <Route path='/' element={<BikeRoot />} ></Route>
+      <Route path='/nearby' element={<Nearby />} ></Route>
+      <Route path='/recent' element={<Recent />} ></Route>
+      <Route path='/search' element={<Search />} ></Route>
+      <Route path='/bike/station/' element={<BikeStation />} ></Route>
+      <Route path='*' element={<Err404 />} ></Route>
+    </Routes>
   );
 }
 

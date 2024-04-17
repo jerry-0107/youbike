@@ -27,8 +27,7 @@ import CircularProgress, {
 } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { YouBikeImage } from '../youbikeImage';
-
-
+import WifiOffIcon from '@mui/icons-material/WifiOff';
 
 export default function BikeStation() {
   const [pageTitle, setPageTitle] = React.useState("loading")
@@ -113,6 +112,61 @@ export default function BikeStation() {
       (...errors) => { setOpen(true); console.log(errors); setIsLoading(false) })
   }
 
+  function BikeDataDisplay({ data }) {
+    //計算可借車輛，並回傳處理過的JSX 組件 
+    return (
+      <Box sx={{
+        display: "flex", justifyContent: "space-between", mt: 2
+      }}
+        component="div">
+        <div style={{ textAlign: "center", flexGrow: "1" }}>
+          <YouBikeImage src='/youbike/YouBike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br />一般<br />
+          <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1, height: "100%" }}>
+            {data.StationUID === "" ? <CircularProgress size={"1rem"} /> :
+              <>{
+                data[0].AvailableRentBikesDetail.GeneralBikes < 1 ? <span style={{ color: "red" }}>{data[0].AvailableRentBikesDetail.GeneralBikes}</span> : data[0].AvailableRentBikesDetail.GeneralBikes
+              }</>}</Typography>
+        </div>
+
+        <Divider component="div" orientation="vertical" variant="middle" flexItem />
+        {data[0].AvailableRentBikesDetail.ElectricBikes > 0 ? <>
+          <div style={{ textAlign: "center", flexGrow: "1" }}>
+            <YouBikeImage src='/youbike/YouBike2.0E.svg' style={{ height: "2.5em" }} alt='2.0E可借車輛' /><br />電輔<br />
+            <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
+              {data.StationUID === "" ? <CircularProgress size={"1rem"} /> :
+                <>{data[0].AvailableRentBikesDetail.ElectricBikes}</>}</Typography>
+          </div>
+          <Divider component="div" orientation="vertical" variant="middle" flexItem />
+        </> : <></>}
+        <div style={{ textAlign: "center", flexGrow: "1" }}>
+          <YouBikeImage src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br />空位<br />
+          <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
+            {data.StationUID === "" ? <CircularProgress size={"1rem"} /> :
+              data[0].AvailableReturnBikes < 1 ? <span style={{ color: "red" }}>{data[0].AvailableReturnBikes}</span> : data[0].AvailableReturnBikes}</Typography></div>
+      </Box>
+    )
+  }
+
+
+  function setSubtitleAndChip(data) {
+    if (data[0].ServiceStatus === 0) {
+      setBikeStationCardSubTitle(<Chip color="error" label="停止營運" />)
+      setCountdown(-1)
+    } else if (data[0].ServiceStatus === 1) {
+      //正常
+      if (data[0].AvailableRentBikes === 0) {
+        setBikeStationCardSubTitle(<Chip color="warning" label="無車可借" />)
+      } else if (data[0].AvailableReturnBikes === 0) {
+        setBikeStationCardSubTitle(<Chip color="warning" label="車位滿載" />)
+      } else {
+        setBikeStationCardSubTitle(<Chip color="success" label="正常借還" />)
+      }
+    }
+    else {
+      setBikeStationCardSubTitle(<Chip color="error" label="暫停營運" />)
+      setCountdown(-1)
+    }
+  }
 
 
 
@@ -132,7 +186,6 @@ export default function BikeStation() {
           setIsLoading(false)
           if (res.length) {
             recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), uid: UrlParam("uid") })
-
             setBikeStationData(res)
             setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
             setBikeStationCardTitle(res[0].StationName.Zh_tw.replace("_", " "))
@@ -144,8 +197,6 @@ export default function BikeStation() {
             setBikeStationCardSubTitle("請檢查輸入")
             setTransferTab("資料讀取失敗")
           }
-
-
         }, () => setIsLoading(false))
       getBikeData()
     }
@@ -175,6 +226,7 @@ export default function BikeStation() {
 
   React.useEffect(() => {
     if (bikeData && bikeStationData) {
+      setOpen(false)
       var res = bikeStationData
       console.log(res, bikeData)
       if (res.length === 0) {
@@ -184,26 +236,7 @@ export default function BikeStation() {
         setBikeStationCardSubTitle("請檢查輸入")
         setTransferTab("資料讀取失敗")
       } else if (bikeData.length > 0 && bikeStationData.length > 0) {
-
-        if (bikeData[0].ServiceStatus === 0) {
-          setBikeStationCardSubTitle(<Chip color="error" label="停止營運" />)
-          setCountdown(-1)
-        } else if (bikeData[0].ServiceStatus === 1) {
-          //正常
-          if (bikeData[0].AvailableRentBikes === 0) {
-            setBikeStationCardSubTitle(<Chip color="warning" label="無車可借" />)
-          } else if (bikeData[0].AvailableReturnBikes === 0) {
-            setBikeStationCardSubTitle(<Chip color="warning" label="車位滿載" />)
-          } else {
-            setBikeStationCardSubTitle(<Chip color="success" label="正常借還" />)
-          }
-        }
-        else {
-          setBikeStationCardSubTitle(<Chip color="error" label="暫停營運" />)
-          setCountdown(-1)
-        }
-
-
+        setSubtitleAndChip(bikeData)
         setBikeStationCardBody(
           <>
             <LocationOnIcon sx={{ verticalAlign: "bottom" }} />{res[0].StationAddress.Zh_tw ? res[0].StationAddress.Zh_tw : "沒有地址資料"}
@@ -226,36 +259,8 @@ export default function BikeStation() {
               </Marker>
             </MapContainer>
             <p></p>
+            <BikeDataDisplay data={bikeData} />
 
-            <Box sx={{
-              display: "flex", justifyContent: "space-between", mt: 2
-            }}
-              component="div">
-              <div style={{ textAlign: "center", flexGrow: "1" }}>
-                <YouBikeImage src='/youbike/YouBike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br />一般<br />
-                <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1, height: "100%" }}>
-                  {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
-                    <>{
-                      bikeData[0].AvailableRentBikesDetail.GeneralBikes < 1 ? <span style={{ color: "red" }}>{bikeData[0].AvailableRentBikesDetail.GeneralBikes}</span> : bikeData[0].AvailableRentBikesDetail.GeneralBikes
-                    }</>}</Typography>
-              </div>
-
-              <Divider component="div" orientation="vertical" variant="middle" flexItem />
-              {bikeData[0].AvailableRentBikesDetail.ElectricBikes > 0 ? <>
-                <div style={{ textAlign: "center", flexGrow: "1" }}>
-                  <YouBikeImage src='/youbike/YouBike2.0E.svg' style={{ height: "2.5em" }} alt='2.0E可借車輛' /><br />電輔<br />
-                  <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
-                    {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
-                      <>{bikeData[0].AvailableRentBikesDetail.ElectricBikes}</>}</Typography>
-                </div>
-                <Divider component="div" orientation="vertical" variant="middle" flexItem />
-              </> : <></>}
-              <div style={{ textAlign: "center", flexGrow: "1" }}>
-                <YouBikeImage src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br />空位<br />
-                <Typography component="div" sx={{ fontSize: "2.5em", m: 0, p: 1 }}>
-                  {bikeData.StationUID === "" ? <CircularProgress size={"1rem"} /> :
-                    bikeData[0].AvailableReturnBikes < 1 ? <span style={{ color: "red" }}>{bikeData[0].AvailableReturnBikes}</span> : bikeData[0].AvailableReturnBikes}</Typography></div>
-            </Box>
             <p>最後更新: {dayjs(bikeData.SrcUpdateTime).format("HH:mm:ss")}</p>
           </>)
       } else {
@@ -310,8 +315,9 @@ export default function BikeStation() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
+            <WifiOffIcon size="large" />
             更新 即時車位資料 時出錯<br />
-            我們將持續嘗試更新資料<br />
+            請確認你的網路連線<br />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
