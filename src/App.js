@@ -7,7 +7,7 @@ import { Err404 } from './pages/error404';
 import BikeRoot from './pages/BikeRoot';
 import BikeStation from './pages/BikeStation';
 import { Nearby } from './pages/nearbyData';
-import { Recent } from './pages/recentData';
+import { Favorite } from './pages/FavoriteData';
 import { Search } from './pages/search';
 
 
@@ -62,8 +62,8 @@ function App() {
         <Routes>
           <Route path='/' element={<BikeRoot />} ></Route>
           <Route path='/nearby' element={<Nearby />} ></Route>
-          <Route path='/recent' element={<Recent />} ></Route>
-          <Route path='/favorite' element={<Recent />} ></Route>
+          <Route path='/Favorite' element={<Favorite />} ></Route>
+          <Route path='/favorite' element={<Favorite />} ></Route>
           <Route path='/search' element={<Search />} ></Route>
           <Route path='/bike/station/' element={<BikeStation />} ></Route>
           <Route path='*' element={<Err404 />} ></Route>

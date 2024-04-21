@@ -68,22 +68,6 @@ export default function BikeStation() {
     setOpen(false);
   };
 
-  function recordRecentData(data) {
-    var recentData = JSON.parse(localStorage.getItem("recentData"))
-    if (recentData) {
-      if (recentData.length > 99) {
-        recentData.reverse().pop()
-        recentData.reverse()
-      }
-      var oldData = (recentData)
-      oldData.push(data)
-      localStorage.setItem("recentData", JSON.stringify(oldData))
-
-    } else {
-      var newData = JSON.stringify([data])
-      localStorage.setItem("recentData", (newData))
-    }
-  }
 
   const greenIcon = new L.Icon({
     iconUrl:
@@ -190,16 +174,10 @@ export default function BikeStation() {
                 stationUID: UrlParam("uid")
               }
             )
-            recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), uid: UrlParam("uid") })
+
             setBikeStationData(res)
             setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
-            setBikeStationCardTitle(
-              <div style={{ display: "flex" }}>
-                <div>{res[0].StationName.Zh_tw.replace("_", " ")}</div>
-                <div style={{ float: "right" }}>
-                  <FavoriteBtn stationName={res[0].StationName.Zh_tw} stationUID={UrlParam("uid")} />
-                </div>
-              </div>)
+            setBikeStationCardTitle(res[0].StationName.Zh_tw.replace("_", " "))
             setBikeStationCardSubTitle(<></>)
           } else {
             setCountdown(-1)
