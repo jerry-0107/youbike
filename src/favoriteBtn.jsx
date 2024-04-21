@@ -18,7 +18,7 @@ function getFavoriteList() {
     return favoriteStations
 }
 
-function editFavoriteList(data, method) {
+function editFavoriteList(data, method, callback) {
     var favoriteStations = getFavoriteList()
     if (favoriteStations) {
 
@@ -35,6 +35,7 @@ function editFavoriteList(data, method) {
         var newArr = favoriteStations.filter((v) => { return v.uid !== data.uid })
         localStorage.setItem("favoriteStations", JSON.stringify(newArr))
     }
+    callback(isContainedInFavoriteList(data.uid))
 }
 
 function isContainedInFavoriteList(uid) {
@@ -50,8 +51,7 @@ function isContainedInFavoriteList(uid) {
 
 export default function FavoriteBtn({ stationName, stationUID, options, isInTopBar }) {
     const label = { inputProps: { 'aria-label': '加入或移除我的最愛', } };
-
-
+    const [isChecked, setIsChecked] = React.useState(isContainedInFavoriteList(stationUID))
     return (
         <Box sx={{ display: isInTopBar ? "block" : { xs: 'none', sm: 'block' } }}>
             <Checkbox {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} sx={{
@@ -60,20 +60,20 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                     color: pink[600],
                 },
                 verticalAlign: "text-top",
-                display: isInTopBar ? "block" : "inline"
+
 
             }}
-                checked={isContainedInFavoriteList(stationUID)}
+                checked={isChecked}
 
                 onClick={
                     (e) => {
                         if (e.target.checked) {
-                            editFavoriteList({ name: stationName, uid: stationUID }, "add")
+                            editFavoriteList({ name: stationName, uid: stationUID }, "add", setIsChecked)
                             console.log(e, { name: stationName, uid: stationUID }, "add")
 
                         }
                         else {
-                            editFavoriteList({ name: stationName, uid: stationUID }, "remove")
+                            editFavoriteList({ name: stationName, uid: stationUID }, "remove", setIsChecked)
                             console.log(e, { name: stationName, uid: stationUID }, "remove")
 
                         }
