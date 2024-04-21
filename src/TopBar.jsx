@@ -85,10 +85,11 @@ export function TopAppBar(props) {
                         ))}
                     </Box>
 
-                    <Box sx={{ display: "block" }}>
-                        <FavoriteBtn isInTopBar={true} />
-                    </Box>
-
+                    {window.location.pathname.includes("/bike/station") ?
+                        <Box sx={{ display: "block" }}>
+                            <FavoriteBtn isInTopBar={true} />
+                        </Box>
+                        : <></>}
                 </Toolbar>
             </AppBar>
             <Toolbar />

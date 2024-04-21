@@ -31,7 +31,7 @@ export function Favorite() {
       <TopAppBar title="我的最愛"></TopAppBar>
       <Box sx={{ p: 3 }}>
         <p>以下顯示我的最愛</p>
-        <Button variant='text' color='error' onClick={() => { if (window.confirm("是否確定清除資料?")) { localStorage.setItem("FavoriteData", "[]"); window.location.reload() } }}>清除資料</Button>
+        <Button variant='text' color='error' onClick={() => { if (window.confirm("是否確定清除資料?")) { localStorage.setItem("favoriteStations", "[]"); window.location.reload() } }}>清除資料</Button>
         <p></p>
         {FavoriteData.length < 1 ? <>無資料</> : <></>}
         <List>
