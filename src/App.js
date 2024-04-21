@@ -63,6 +63,7 @@ function App() {
           <Route path='/' element={<BikeRoot />} ></Route>
           <Route path='/nearby' element={<Nearby />} ></Route>
           <Route path='/recent' element={<Recent />} ></Route>
+          <Route path='/favorite' element={<Recent />} ></Route>
           <Route path='/search' element={<Search />} ></Route>
           <Route path='/bike/station/' element={<BikeStation />} ></Route>
           <Route path='*' element={<Err404 />} ></Route>

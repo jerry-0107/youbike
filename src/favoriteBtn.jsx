@@ -15,11 +15,11 @@ function editFavoriteList(data, method) {
 
     if (method === "add") {
         favoriteStations.push(data)
-        localStorage.setItem(JSON.stringify(favoriteStations))
+        localStorage.setItem("favoriteStations", JSON.stringify(favoriteStations))
     }
     else if (method === "remove") {
         var newArr = favoriteStations.filter((v) => { return v.uid !== data.uid })
-        localStorage.setItem(JSON.stringify(newArr))
+        localStorage.setItem("favoriteStations", JSON.stringify(newArr))
     }
 }
 
@@ -55,7 +55,7 @@ export default function FavoriteBtn({ stationName, stationUID, options }) {
             '&.Mui-checked': {
                 color: pink[600],
             },
-            display: "inline-block",
+            display: "inline",
             verticalAlign: "text-top"
 
         }}
