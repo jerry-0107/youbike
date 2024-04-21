@@ -23,7 +23,6 @@ const navItems = ['首頁', "搜尋", '我的最愛'];
 const routes = ["/", "/search", "/favorite"]
 
 export function TopAppBar(props) {
-    const { window } = props;
     const { isLoading } = props;
     const { title } = props;
     const { favbtnData } = props
