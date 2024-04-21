@@ -45,7 +45,7 @@ function recordRecentData(data) {
 
 
 export default function FavoriteBtn({ stationName, stationUID, options }) {
-    const label = { inputProps: { 'aria-label': 'Checkbox demo', onclick: (e) => { if (e.target.checked) { editFavoriteList({ name: stationName, uid: stationUID }, "add") }; console.log(e) } } };
+    const label = { inputProps: { 'aria-label': '加入或移除我的最愛', } };
 
 
     return (
@@ -55,10 +55,19 @@ export default function FavoriteBtn({ stationName, stationUID, options }) {
             '&.Mui-checked': {
                 color: pink[600],
             },
-            display: "inline",
+            display: "inline-block",
             verticalAlign: "text-top"
 
-        }} />
+        }}
+            onClick={
+                (e) => {
+                    if (e.target.checked) {
+                        editFavoriteList({ name: stationName, uid: stationUID }, "add")
+                    };
+                    console.log(e)
+                }
+            }
+        />
 
     );
 }
