@@ -54,18 +54,22 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                 '&.Mui-checked': {
                     color: pink[600],
                 },
-                verticalAlign: "text-top"
+                verticalAlign: "text-top",
+                display: isInTopBar ? "block" : "inline"
 
             }}
                 onClick={
                     (e) => {
                         if (e.target.checked) {
                             editFavoriteList({ name: stationName, uid: stationUID }, "add")
+                            console.log(e, { name: stationName, uid: stationUID }, "add")
+
                         }
                         else {
                             editFavoriteList({ name: stationName, uid: stationUID }, "remove")
+                            console.log(e, { name: stationName, uid: stationUID }, "remove")
+
                         }
-                        console.log(e)
                     }
                 }
             />
