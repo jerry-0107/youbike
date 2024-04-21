@@ -45,7 +45,7 @@ function recordRecentData(data) {
 
 
 export default function FavoriteBtn({ stationName, stationUID, options }) {
-    const label = { inputProps: { 'aria-label': 'Checkbox demo', onchange: (e) => { if (e.target.checked) { editFavoriteList({ name: stationName, uid: stationUID }, "add") }; console.log(e) } } };
+    const label = { inputProps: { 'aria-label': 'Checkbox demo', onclick: (e) => { if (e.target.checked) { editFavoriteList({ name: stationName, uid: stationUID }, "add") }; console.log(e) } } };
 
 
     return (
@@ -55,7 +55,8 @@ export default function FavoriteBtn({ stationName, stationUID, options }) {
             '&.Mui-checked': {
                 color: pink[600],
             },
-            display: "inline-block"
+            display: "inline",
+            verticalAlign: "text-top"
 
         }} />
 
