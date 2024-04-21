@@ -194,7 +194,7 @@ export default function BikeStation() {
             setBikeStationData(res)
             setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
             setBikeStationCardTitle(
-              <div style={{ display: "inline-flex" }}>
+              <div style={{ display: "flex" }}>
                 <div>{res[0].StationName.Zh_tw.replace("_", " ")}</div>
                 <div style={{ float: "right" }}>
                   <FavoriteBtn stationName={res[0].StationName.Zh_tw} stationUID={UrlParam("uid")} />

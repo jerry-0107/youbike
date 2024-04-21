@@ -59,7 +59,6 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                 '&.Mui-checked': {
                     color: pink[600],
                 },
-                verticalAlign: "text-top",
                 ...sx
 
             }}
