@@ -28,7 +28,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { SearchField } from "../searchField";
 import Chip from '@mui/material/Chip';
 import { yellow } from "@mui/material/colors";
-
+import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import { YouBikeImage } from "../youbikeImage";
@@ -36,6 +36,7 @@ import { YouBikeImage } from "../youbikeImage";
 function BikeRoot() {
   const mymap = React.useRef();
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialogOpen2, setDialogOpen2] = React.useState(false);
 
 
   const [isLoading, setIsLoading] = React.useState(false)
@@ -81,8 +82,6 @@ function BikeRoot() {
     popupAnchor: [1, -34],
     shadowSize: [41, 41],
   });
-
-
   const GridItem = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -110,7 +109,7 @@ function BikeRoot() {
 
         setCurrentLocation([lat, lon])
       },
-      () => setIsLoading(false)
+      () => { setIsLoading(false); setDialogOpen2(true) }
 
     );
 
@@ -120,10 +119,8 @@ function BikeRoot() {
         setIsLoading(false)
         console.log(res);
         setStationNearbyBikes(res);
-
-
       },
-      e => { alert("error"); setIsLoading(false) }
+      () => { setIsLoading(false); setDialogOpen2(true) }
     );
   }
 
@@ -387,10 +384,11 @@ function BikeRoot() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"無法使用你的定位資訊"}
+          {<><LocationOffIcon /> 無法使用你的定位資訊</>}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" component="div">
+
             我們無法使用你的定位資訊，你將無法使用我們所提供的部分功能
           </DialogContentText>
         </DialogContent>
@@ -398,6 +396,33 @@ function BikeRoot() {
           <Button
             onClick={() => {
               setDialogOpen(false);
+            }}
+          >
+            確定
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+      <Dialog
+        open={dialogOpen2}
+        onClose={() => setDialogOpen2(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {<>資料讀取失敗</>}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" component="div">
+
+            我們無法讀取部分資料，請確認你的網路連線，再試一次
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setDialogOpen2(false);
             }}
           >
             確定

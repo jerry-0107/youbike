@@ -18,8 +18,8 @@ import { Link } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
 
 const drawerWidth = 240;
-const navItems = ['首頁', "搜尋", '最近查詢'];
-const routes = ["/", "/search", "/recent"]
+const navItems = ['首頁', "搜尋", '我的最愛'];
+const routes = ["/", "/search", "/favorite"]
 
 export function TopAppBar(props) {
     const { window } = props;

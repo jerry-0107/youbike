@@ -27,7 +27,7 @@ import CircularProgress, {
 } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { YouBikeImage } from '../youbikeImage';
-import WifiOffIcon from '@mui/icons-material/WifiOff';
+import FavoriteBtn from '../favoriteBtn';
 
 export default function BikeStation() {
   const [pageTitle, setPageTitle] = React.useState("loading")
@@ -41,7 +41,7 @@ export default function BikeStation() {
   const [stationID, setStationID] = React.useState()
   const [countdown, setCountdown] = React.useState(60)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [transferTab, setTransferTab] = React.useState(<><center><CircularProgress size="2rem" /><br />資料讀取中</center></>)
+
   function UrlParam(name) {
     var url = new URL(window.location.href),
       result = url.searchParams.get(name);
@@ -175,7 +175,6 @@ export default function BikeStation() {
       setTopbarTitle("找不到站點")
       setBikeStationCardTitle("找不到站點")
       setBikeStationCardSubTitle("網址無效")
-      setTransferTab("資料讀取失敗")
       setCountdown(-1)
     }
     else {
@@ -187,7 +186,7 @@ export default function BikeStation() {
           if (res.length) {
             recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), uid: UrlParam("uid") })
             setBikeStationData(res)
-            setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
+            setTopbarTitle(<><FavoriteBtn stationName={res[0].StationName.Zh_tw} stationUID={UrlParam("uid")} /> {res[0].StationName.Zh_tw.replace("_", " ")}</>)
             setBikeStationCardTitle(res[0].StationName.Zh_tw.replace("_", " "))
             setBikeStationCardSubTitle(<></>)
           } else {
@@ -195,7 +194,6 @@ export default function BikeStation() {
             setTopbarTitle("找不到站點")
             setBikeStationCardTitle("找不到站點")
             setBikeStationCardSubTitle("請檢查輸入")
-            setTransferTab("資料讀取失敗")
           }
         }, () => setIsLoading(false))
       getBikeData()
@@ -234,7 +232,6 @@ export default function BikeStation() {
         setTopbarTitle("找不到站點")
         setBikeStationCardTitle("找不到站點")
         setBikeStationCardSubTitle("請檢查輸入")
-        setTransferTab("資料讀取失敗")
       } else if (bikeData.length > 0 && bikeStationData.length > 0) {
         setSubtitleAndChip(bikeData)
         setBikeStationCardBody(
@@ -311,13 +308,13 @@ export default function BikeStation() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"發生錯誤，無法更新資料"}
+          {<>發生錯誤，無法更新資料</>}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <WifiOffIcon size="large" />
             更新 即時車位資料 時出錯<br />
             請確認你的網路連線<br />
+            我們將持續嘗試更新資料
           </DialogContentText>
         </DialogContent>
         <DialogActions>
