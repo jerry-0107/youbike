@@ -3,7 +3,13 @@ import Checkbox from '@mui/material/Checkbox';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import { pink } from '@mui/material/colors';
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+
+function editFavoriteList() {
+
+}
+
+const label = { inputProps: { 'aria-label': 'Checkbox demo', onchange: (e) => { if (e.target.checked) { }; console.log(e) } } };
+
 
 export default function FavoriteBtn({ stationName, stationUID, options }) {
     return (
@@ -13,8 +19,8 @@ export default function FavoriteBtn({ stationName, stationUID, options }) {
                 '&.Mui-checked': {
                     color: pink[600],
                 },
-            }} />
 
+            }} />
         </div>
     );
 }
