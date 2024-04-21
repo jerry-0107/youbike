@@ -49,7 +49,7 @@ function isContainedInFavoriteList(uid) {
     return false
 }
 
-export default function FavoriteBtn({ stationName, stationUID, options, isInTopBar }) {
+export default function FavoriteBtn({ stationName, stationUID, options, isInTopBar, sx }) {
     const label = { inputProps: { 'aria-label': '加入或移除我的最愛', } };
     const [isChecked, setIsChecked] = React.useState(isContainedInFavoriteList(stationUID))
     return (
@@ -60,7 +60,7 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                     color: pink[600],
                 },
                 verticalAlign: "text-top",
-
+                ...sx
 
             }}
                 checked={isChecked}
@@ -70,12 +70,10 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                         if (e.target.checked) {
                             editFavoriteList({ name: stationName, uid: stationUID }, "add", setIsChecked)
                             console.log(e, { name: stationName, uid: stationUID }, "add")
-
                         }
                         else {
                             editFavoriteList({ name: stationName, uid: stationUID }, "remove", setIsChecked)
                             console.log(e, { name: stationName, uid: stationUID }, "remove")
-
                         }
                     }
                 }
