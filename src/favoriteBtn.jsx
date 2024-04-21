@@ -52,6 +52,13 @@ function isContainedInFavoriteList(uid) {
 export default function FavoriteBtn({ stationName, stationUID, options, isInTopBar, sx }) {
     const label = { inputProps: { 'aria-label': '加入或移除我的最愛', } };
     const [isChecked, setIsChecked] = React.useState(isContainedInFavoriteList(stationUID))
+    React.useEffect(() => {
+        setIsChecked(isContainedInFavoriteList(stationUID));
+        console.log("isContainedInFavoriteList ?", isContainedInFavoriteList(stationUID))
+    }, [])
+
+
+
     return (
         <Box sx={{ display: isInTopBar ? "block" : { xs: 'none', sm: 'block' } }}>
             <Checkbox {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} sx={{
