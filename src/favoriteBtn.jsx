@@ -5,8 +5,21 @@ import Favorite from '@mui/icons-material/Favorite';
 import { pink } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 
-function editFavoriteList(data, method) {
+
+function getFavoriteList() {
     var favoriteStations = JSON.parse(localStorage.getItem("favoriteStations"))
+    if (favoriteStations) {
+
+    } else {
+        localStorage.setItem("favoriteStations", "[]")
+        favoriteStations = JSON.parse(localStorage.getItem("favoriteStations"))
+        return favoriteStations
+    }
+    return favoriteStations
+}
+
+function editFavoriteList(data, method) {
+    var favoriteStations = getFavoriteList()
     if (favoriteStations) {
 
     } else {
@@ -24,24 +37,16 @@ function editFavoriteList(data, method) {
     }
 }
 
+function isContainedInFavoriteList(uid) {
+    var favoriteStations = getFavoriteList()
 
-function recordRecentData(data) {
-    var recentData = JSON.parse(localStorage.getItem("recentData"))
-    if (recentData) {
-        if (recentData.length > 99) {
-            recentData.reverse().pop()
-            recentData.reverse()
+    for (let i = 0; i < favoriteStations.length; i++) {
+        if (favoriteStations[i].uid === uid) {
+            return true
         }
-        var oldData = (recentData)
-        oldData.push(data)
-        localStorage.setItem("recentData", JSON.stringify(oldData))
-
-    } else {
-        var newData = JSON.stringify([data])
-        localStorage.setItem("recentData", (newData))
     }
+    return false
 }
-
 
 export default function FavoriteBtn({ stationName, stationUID, options, isInTopBar }) {
     const label = { inputProps: { 'aria-label': '加入或移除我的最愛', } };
@@ -58,6 +63,8 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                 display: isInTopBar ? "block" : "inline"
 
             }}
+                checked={isContainedInFavoriteList(stationUID)}
+
                 onClick={
                     (e) => {
                         if (e.target.checked) {
