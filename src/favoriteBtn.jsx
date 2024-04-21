@@ -3,6 +3,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import { pink } from '@mui/material/colors';
+import Box from '@mui/material/Box';
 
 function editFavoriteList(data, method) {
     var favoriteStations = JSON.parse(localStorage.getItem("favoriteStations"))
@@ -42,32 +43,32 @@ function recordRecentData(data) {
 }
 
 
-
-
-export default function FavoriteBtn({ stationName, stationUID, options }) {
+export default function FavoriteBtn({ stationName, stationUID, options, isInTopBar }) {
     const label = { inputProps: { 'aria-label': '加入或移除我的最愛', } };
 
 
     return (
+        <Box sx={{ display: isInTopBar ? "block" : { xs: 'none', sm: 'block' } }}>
+            <Checkbox {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} sx={{
+                color: pink[800],
+                '&.Mui-checked': {
+                    color: pink[600],
+                },
+                verticalAlign: "text-top"
 
-        <Checkbox {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} sx={{
-            color: pink[800],
-            '&.Mui-checked': {
-                color: pink[600],
-            },
-            display: "inline",
-            verticalAlign: "text-top"
-
-        }}
-            onClick={
-                (e) => {
-                    if (e.target.checked) {
-                        editFavoriteList({ name: stationName, uid: stationUID }, "add")
-                    };
-                    console.log(e)
+            }}
+                onClick={
+                    (e) => {
+                        if (e.target.checked) {
+                            editFavoriteList({ name: stationName, uid: stationUID }, "add")
+                        }
+                        else {
+                            editFavoriteList({ name: stationName, uid: stationUID }, "remove")
+                        }
+                        console.log(e)
+                    }
                 }
-            }
-        />
-
+            />
+        </Box>
     );
 }

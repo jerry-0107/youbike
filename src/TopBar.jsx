@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
+import FavoriteBtn from './favoriteBtn';
 
 const drawerWidth = 240;
 const navItems = ['首頁', "搜尋", '我的最愛'];
@@ -25,6 +26,7 @@ export function TopAppBar(props) {
     const { window } = props;
     const { isLoading } = props;
     const { title } = props;
+    const { favbtnData } = props
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => {
@@ -82,6 +84,9 @@ export function TopAppBar(props) {
                                 {item}
                             </Button>
                         ))}
+                    </Box>
+                    <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                        <FavoriteBtn isInTopBar={true} />
                     </Box>
                 </Toolbar>
             </AppBar>

@@ -48,7 +48,7 @@ export default function BikeStation() {
     return result
   }
   const [open, setOpen] = React.useState(false);
-
+  const [favbtnData, setFavbtnData] = React.useState({})
 
 
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
@@ -184,6 +184,12 @@ export default function BikeStation() {
         (res) => {
           setIsLoading(false)
           if (res.length) {
+            setFavbtnData(
+              {
+                stationName: res[0].StationName.Zh_tw,
+                stationUID: UrlParam("uid")
+              }
+            )
             recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), uid: UrlParam("uid") })
             setBikeStationData(res)
             setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
@@ -270,7 +276,7 @@ export default function BikeStation() {
 
   return (
     <>
-      <TopAppBar title={topbarTitle} isLoading={isLoading} />
+      <TopAppBar title={topbarTitle} isLoading={isLoading} favbtnData={favbtnData} />
       <Box sx={{ m: 0, p: 3 }}>
         <Card sx={{ mt: 0, pt: 0 }}>
           <CardContent>
