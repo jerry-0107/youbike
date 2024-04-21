@@ -193,7 +193,13 @@ export default function BikeStation() {
             recordRecentData({ StationName: res[0].StationName.Zh_tw.replace("_", " "), uid: UrlParam("uid") })
             setBikeStationData(res)
             setTopbarTitle(res[0].StationName.Zh_tw.replace("_", " "))
-            setBikeStationCardTitle(<>{res[0].StationName.Zh_tw.replace("_", " ")} <FavoriteBtn sx={{ float: "right", display: "inline" }} stationName={res[0].StationName.Zh_tw} stationUID={UrlParam("uid")} /> </>)
+            setBikeStationCardTitle(
+              <div style={{ display: "inline-flex" }}>
+                <div>{res[0].StationName.Zh_tw.replace("_", " ")}</div>
+                <div style={{ float: "right" }}>
+                  <FavoriteBtn stationName={res[0].StationName.Zh_tw} stationUID={UrlParam("uid")} />
+                </div>
+              </div>)
             setBikeStationCardSubTitle(<></>)
           } else {
             setCountdown(-1)
