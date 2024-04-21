@@ -87,7 +87,7 @@ export function TopAppBar(props) {
 
                     {window.location.pathname.includes("/bike/station") ?
                         <Box sx={{ display: "block" }}>
-                            <FavoriteBtn isInTopBar={true} />
+                            <FavoriteBtn isInTopBar={true} stationName={favbtnData.stationName} stationUID={favbtnData.stationUID} />
                         </Box>
                         : <></>}
                 </Toolbar>
