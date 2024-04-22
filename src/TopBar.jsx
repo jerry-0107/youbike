@@ -71,7 +71,7 @@ export function TopAppBar(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography
-                        noWrap={true}
+                        noWrap
                         variant="h6"
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}

@@ -74,12 +74,12 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
                 onClick={
                     (e) => {
                         if (e.target.checked) {
-                            editFavoriteList({ name: stationName, uid: stationUID }, "add", setIsChecked)
-                            console.log(e, { name: stationName, uid: stationUID }, "add")
+                            editFavoriteList({ name: stationName.replace("_", " "), uid: stationUID }, "add", setIsChecked)
+                            console.log(e, { name: stationName.replace("_", " "), uid: stationUID }, "add")
                         }
                         else {
-                            editFavoriteList({ name: stationName, uid: stationUID }, "remove", setIsChecked)
-                            console.log(e, { name: stationName, uid: stationUID }, "remove")
+                            editFavoriteList({ name: stationName.replace("_", " "), uid: stationUID }, "remove", setIsChecked)
+                            console.log(e, { name: stationName.replace("_", " "), uid: stationUID }, "remove")
                         }
                     }
                 }
