@@ -25,9 +25,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
+import { LeafletMap } from "../components/leafletMap";
 
 function BikeRoot() {
-  const mymap = React.useRef();
+  const [mymap, setMymap] = React.useState();
   const [radioValue, setRadioValue] = React.useState("nearby");
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
@@ -46,47 +47,24 @@ function BikeRoot() {
   const [stationNearby, setStationNearby] = React.useState([]);
   const [stationNearbyBikes, setStationNearbyBikes] = React.useState([]);
 
-  const [locationMark, setLocationMark] = React.useState(<></>);
-
-  const redIcon = new L.Icon({
-    iconUrl:
-      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
-  const greenIcon = new L.Icon({
-    iconUrl:
-      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
-
-  const MapEvents = () => {
-    useMapEvents({
-      click(e) {
-        // setState your coords here
-        // coords exist in "e.latlng.lat" and "e.latlng.lng"
-        var loc = [e.latlng.lat, e.latlng.lng]
-        let marker = L.marker(loc, { icon: greenIcon }).addTo(mymap.current);
-
-        marker.bindPopup("標記的位置")
-        mymap.current.flyTo(loc, 16)
-
-        marker.addEventListener("click", (e) => { console.log(e) })
+  const [locationMark, setLocationMark] = React.useState({ position: [0, 0], iconColor: "red", popup: "NULL" });
+  const [currentMarks, setCurrentMarks] = React.useState([])
 
 
-      }
-    })
-    return false;
-  };
+
+
+
+  function handleMapClick(e) {
+
+    var loc = [e.latlng.lat, e.latlng.lng]
+    let marker = L.marker(loc, { icon: greenIcon }).addTo(mymap.current);
+
+    marker.bindPopup("標記的位置")
+    mymap.current.flyTo(loc, 16)
+
+    marker.addEventListener("click", (e) => { console.log(e) })
+
+  }
 
 
   function getLocation() {
@@ -112,16 +90,11 @@ function BikeRoot() {
             });
           }
           setStationNearby(res);
-          setLocationMark(
-            <>
-              <Marker
-                position={[loc.coords.latitude, loc.coords.longitude]}
-                icon={redIcon}
-              >
-                <Popup>你的位置</Popup>
-              </Marker>
-            </>
-          );
+          setLocationMark({
+            position: [loc.coords.latitude, loc.coords.longitude],
+            iconColor: "red",
+            popup: "你的位置"
+          });
           mymap.current.setView(
             [loc.coords.latitude, loc.coords.longitude],
             14
@@ -141,7 +114,7 @@ function BikeRoot() {
     }
     function errorFunction() {
       //if(localStorage.getItem("dialog.getLocationError.show") === "true" || !localStorage.getItem("dialog.getLocationError.show")){
-      setDialogOpen(true); //無論如何
+      setDialogOpen(true);
       //}
     }
   }
@@ -150,41 +123,39 @@ function BikeRoot() {
     getLocation();
   }, []);
 
+
+  React.useEffect(() => {
+    setCurrentMarks([])
+    let markerList = []
+    for (let i = 0; i < stationNearby.length; i++) {
+      markerList.push(
+        {
+          position: [stationNearby[i].StationPosition.PositionLat, stationNearby[i].StationPosition.PositionLon],
+          iconColor: "green",
+          popup: stationNearby[i].StationName.Zh_tw.replace("_", " ")
+        }
+      )
+    }
+    if (locationMark.popup !== "NULL") {
+      markerList.push(locationMark)
+    }
+    setCurrentMarks(markerList)
+  }, [locationMark, stationNearby])
+
   return (
     <>
       <TopAppBar title="公共自行車"></TopAppBar>
       <Box sx={{ p: 3 }}>
 
-        <MapContainer
-          ref={mymap}
-          dragging={!L.Browser.mobile}
-          scrollWheelZoom={false}
+        <LeafletMap
           center={[23.75518176611264, 120.9406086935125]}
           zoom={7}
-          style={{ width: "100%", height: "35vh" }}
-        >
-          <TileLayer
-            attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "<br/>使用兩指移動與縮放地圖" : ""
-              }`}
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {locationMark}
-          <MapEvents />
+          scrollWheelZoom={false}
+          onClickCallBack={handleMapClick}
+          setRef={setMymap}
+          markers={currentMarks}
+        />
 
-          {
-            stationNearby.map(function (res, index) {
-              return (
-                <Marker
-                  key={"marker-" + index}
-                  position={[res.StationPosition.PositionLat, res.StationPosition.PositionLon]}
-                  icon={greenIcon}
-                >
-                  <Popup>{res.StationName.Zh_tw.replace("_", " ")}</Popup>
-                </Marker>
-              )
-            })
-          }
-        </MapContainer>
         <p></p>
         <Box sx={{ width: "100%", m: 0, p: 0 }}>
           <Card sx={{ mt: 0, pt: 0 }}>

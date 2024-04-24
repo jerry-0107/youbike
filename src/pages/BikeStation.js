@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TopAppBar } from '../TopBar';
+import { TopAppBar } from '../components/topBar';
 import getData from '../getData';
 import Paper from '@mui/material/Paper';
 import Card from '@mui/material/Card';
@@ -26,8 +26,8 @@ import CircularProgress, {
   circularProgressClasses,
 } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { YouBikeImage } from '../youbikeImage';
-import FavoriteBtn from '../favoriteBtn';
+import { YouBikeImage } from '../components/youbikeImage';
+import FavoriteBtn from '../components/favoriteBtn';
 
 export default function BikeStation() {
   const [pageTitle, setPageTitle] = React.useState("loading")

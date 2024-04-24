@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Route, Routes, Link } from 'react-router-dom'
-import { TopAppBar } from '../TopBar';
+import { TopAppBar } from '../components/topBar';
 import { Typography, Box } from '@mui/material';
 
 export function Err404() {

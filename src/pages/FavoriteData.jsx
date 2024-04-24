@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TopAppBar } from '../TopBar';
+import { TopAppBar } from '../components/topBar';
 
 import { Box, Button } from "@mui/material";
 import "leaflet/dist/leaflet.css";
