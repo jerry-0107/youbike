@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { Paper } from "@mui/material";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
-import L from "leaflet";
+import L, { marker } from "leaflet";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -32,9 +32,10 @@ import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import { YouBikeImage } from "../components/youbikeImage";
+import { LeafletMap } from "../components/leafletMap";
 
 function BikeRoot() {
-  const mymap = React.useRef();
+  const [mymap, setMymap] = React.useState();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogOpen2, setDialogOpen2] = React.useState(false);
 
@@ -58,9 +59,10 @@ function BikeRoot() {
   const [stationNearby, setStationNearby] = React.useState([]);
   const [stationNearbyBikes, setStationNearbyBikes] = React.useState([]);
 
-  const [locationMark, setLocationMark] = React.useState(<></>);
+  const [locationMark, setLocationMark] = React.useState({ position: [0, 0], iconColor: "red", popup: "NULL" });
 
   const [currentLocation, setCurrentLocation] = React.useState([0, 0])
+  const [currentMarks, setCurrentMarks] = React.useState([])
 
   const redIcon = new L.Icon({
     iconUrl:
@@ -138,16 +140,11 @@ function BikeRoot() {
       //loc.coords.longitude
       console.log(loc);
       setStationNearbyBtn(<></>);
-      setLocationMark(
-        <>
-          <Marker
-            position={[loc.coords.latitude, loc.coords.longitude]}
-            icon={redIcon}
-          >
-            <Popup>你的位置</Popup>
-          </Marker>
-        </>
-      );
+      setLocationMark({
+        position: [loc.coords.latitude, loc.coords.longitude],
+        iconColor: "red",
+        popup: "你的位置"
+      });
       mymap.current.setView([loc.coords.latitude, loc.coords.longitude], 16)
       getNearByBikeData(loc.coords.latitude, loc.coords.longitude)
     }
@@ -158,26 +155,13 @@ function BikeRoot() {
       //}
     }
   }
-  const MapEvents = () => {
-    useMapEvents({
-      // click(e) {
-      //   // setState your coords here
-      //   // coords exist in "e.latlng.lat" and "e.latlng.lng"
-      //   var loc = [e.latlng.lat, e.latlng.lng]
-      //   let marker = L.marker(loc, { icon: greenIcon }).addTo(mymap.current);
 
-      //   marker.bindPopup("標記的位置")
-      //   mymap.current.flyTo(loc, 16)
 
-      //   marker.addEventListener("click", (e) => { console.log(e) })
-      // },
-      dragend: (e) => {
-        console.log("mapCenter", e.target.getCenter());
-        getNearByBikeData(e.target.getCenter().lat, e.target.getCenter().lng)
-      }
-    })
-    return false;
-  };
+  function onMapDragendCallBack(e) {
+    console.log("mapCenter", e.target.getCenter());
+    getNearByBikeData(e.target.getCenter().lat, e.target.getCenter().lng)
+
+  }
 
   React.useEffect(() => {
     getLocation();
@@ -213,6 +197,50 @@ function BikeRoot() {
     }
   }, [stationNearby, stationNearbyBikes])
 
+  React.useEffect(() => {
+    setCurrentMarks([])
+    let markerList = []
+    for (let i = 0; i < stationNearby.length; i++) {
+      markerList.push(
+        {
+          position: [stationNearby[i].StationPosition.PositionLat, stationNearby[i].StationPosition.PositionLon],
+          iconColor: "green",
+          popup: <>
+
+            {stationNearby[i].StationName.Zh_tw.replace("_", " ")}
+            <p>
+              {stationNearbyBikes[i] ? (
+                stationNearbyBikes[i].ServiceStatus === 1 ?
+                  (
+                    <>
+                      一般:{stationNearbyBikes[i].AvailableRentBikesDetail.GeneralBikes}<br />
+                      {stationNearbyBikes[i].AvailableRentBikesDetail.ElectricBikes > 0 ? <>電輔:{stationNearbyBikes[i].AvailableRentBikesDetail.ElectricBikes}<br /></> : <></>}
+                      空位:{stationNearbyBikes[i].AvailableReturnBikes}<br />
+                    </>
+                  )
+                  :
+                  stationNearbyBikes[i].ServiceStatus === 0 ?
+                    (
+                      <>停止營運</>
+                    )
+                    : (<>暫停營運</>)
+              ) : (
+                <CircularProgress size="1rem" />
+              )}
+            </p>
+            <Link to={`/bike/station/?uid=${stationNearby[i].StationUID}`}>詳細資料</Link>
+
+
+          </>
+        }
+      )
+    }
+    if (locationMark.popup !== "NULL") {
+      markerList.push(locationMark)
+    }
+    setCurrentMarks(markerList)
+  }, [locationMark, stationNearby])
+
   return (
     <>
       <TopAppBar title="YouBike 站點查詢" isLoading={isLoading} />
@@ -247,65 +275,19 @@ function BikeRoot() {
 
           </Grid>
         </Box>
+
         <p></p>
-        <MapContainer
-          ref={mymap}
-          scrollWheelZoom={false}
+
+        <LeafletMap
           center={[23.75518176611264, 120.9406086935125]}
+          style={11}
           zoom={11}
-          style={{ width: "100%", height: "60vh" }}
-        >
-          <TileLayer
-            attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "" : ""
-              }<br/>移動地圖來查看其他站點`}
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {locationMark}
-          <MapEvents />
-          {
-            stationNearby.length > 0 ?
-              stationNearby.map(function (res, index) {
-                return (
-                  <Marker
-                    eventHandlers={{
-                      click: (e) => {
-                        console.log('marker clicked', e)
-                      },
-                    }}
-                    key={"marker-" + index}
-                    position={[res.StationPosition.PositionLat, res.StationPosition.PositionLon]}
-                    icon={greenIcon}
-                  >
-                    <Popup>
-                      {res.StationName.Zh_tw.replace("_", " ")}
-                      <p>
-                        {stationNearbyBikes[index] ? (
-                          stationNearbyBikes[index].ServiceStatus === 1 ?
-                            (
-                              <>
-                                一般:{stationNearbyBikes[index].AvailableRentBikesDetail.GeneralBikes}<br />
-                                {stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes > 0 ? <>電輔:{stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes}<br /></> : <></>}
-                                空位:{stationNearbyBikes[index].AvailableReturnBikes}<br />
-                              </>
-                            )
-                            :
-                            stationNearbyBikes[index].ServiceStatus === 0 ?
-                              (
-                                <>停止營運</>
-                              )
-                              : (<>暫停營運</>)
-                        ) : (
-                          <CircularProgress size="1rem" />
-                        )}
-                      </p>
-                      <Link to={`/bike/station/?uid=${res.StationUID}`}>詳細資料</Link>
-                    </Popup>
-                  </Marker>
-                )
-              })
-              : <></>
-          }
-        </MapContainer>
+          scrollWheelZoom={false}
+          onDragendCallBack={onMapDragendCallBack}
+          setRef={setMymap}
+          markers={currentMarks}
+        />
+
         <p></p>
         <Box sx={{ width: "100%", m: 0, p: 0 }}>
           <Card sx={{ mt: 0, pt: 0 }}>

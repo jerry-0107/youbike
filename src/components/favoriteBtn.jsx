@@ -40,9 +40,10 @@ function editFavoriteList(data, method, callback) {
 
 function isContainedInFavoriteList(uid) {
     var favoriteStations = getFavoriteList()
-
+    console.log(favoriteStations)
     for (let i = 0; i < favoriteStations.length; i++) {
         if (favoriteStations[i].uid === uid) {
+            console.log(favoriteStations[i].uid === uid, favoriteStations[i].uid, uid)
             return true
         }
     }

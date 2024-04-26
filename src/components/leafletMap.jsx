@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from "leaflet";
 
-export function LeafletMap({ center, style, zoom, scrollWheelZoom, onClickCallBack, setRef, markers }) {
+export function LeafletMap({ center, style, zoom, scrollWheelZoom, onClickCallBack, onDragendCallBack, setRef, markers }) {
     const mapref = React.useRef()
 
     function getIconByColor(color) {
@@ -32,10 +32,17 @@ export function LeafletMap({ center, style, zoom, scrollWheelZoom, onClickCallBa
 
 
 
-    function MapEvents({ onClick }) {
+    function MapEvents({ onClick, onDragend }) {
         useMapEvents({
             click(e) {
-                onClick(e)
+                if (typeof onClick === "function") {
+                    onClick(e)
+                }
+            },
+            dragend(e) {
+                if (typeof onDragend === "function") {
+                    onDragend(e)
+                }
             }
         })
         return false;
@@ -70,11 +77,9 @@ export function LeafletMap({ center, style, zoom, scrollWheelZoom, onClickCallBa
                 })}
 
 
-                {typeof (onClickCallBack) === "function" ? <MapEvents onClick={onClickCallBack} /> : <></>}
+                <MapEvents onClick={onClickCallBack} onDragend={onDragendCallBack} />
 
             </MapContainer>
-
-
 
         </>
     )
