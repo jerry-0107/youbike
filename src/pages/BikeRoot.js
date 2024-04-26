@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { Paper } from "@mui/material";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
-import L, { marker } from "leaflet";
+import L from "leaflet";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -32,7 +32,6 @@ import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import { YouBikeImage } from "../components/youbikeImage";
-import { LeafletMap } from "../components/leafletMap";
 
 function BikeRoot() {
   const [mymap, setMymap] = React.useState();
@@ -155,13 +154,26 @@ function BikeRoot() {
       //}
     }
   }
+  const MapEvents = () => {
+    useMapEvents({
+      // click(e) {
+      //   // setState your coords here
+      //   // coords exist in "e.latlng.lat" and "e.latlng.lng"
+      //   var loc = [e.latlng.lat, e.latlng.lng]
+      //   let marker = L.marker(loc, { icon: greenIcon }).addTo(mymap.current);
 
+      //   marker.bindPopup("標記的位置")
+      //   mymap.current.flyTo(loc, 16)
 
-  function onMapDragendCallBack(e) {
-    console.log("mapCenter", e.target.getCenter());
-    getNearByBikeData(e.target.getCenter().lat, e.target.getCenter().lng)
-
-  }
+      //   marker.addEventListener("click", (e) => { console.log(e) })
+      // },
+      dragend: (e) => {
+        console.log("mapCenter", e.target.getCenter());
+        getNearByBikeData(e.target.getCenter().lat, e.target.getCenter().lng)
+      }
+    })
+    return false;
+  };
 
   React.useEffect(() => {
     getLocation();
@@ -205,33 +217,7 @@ function BikeRoot() {
         {
           position: [stationNearby[i].StationPosition.PositionLat, stationNearby[i].StationPosition.PositionLon],
           iconColor: "green",
-          popup: <>
-
-            {stationNearby[i].StationName.Zh_tw.replace("_", " ")}
-            <p>
-              {stationNearbyBikes[i] ? (
-                stationNearbyBikes[i].ServiceStatus === 1 ?
-                  (
-                    <>
-                      一般:{stationNearbyBikes[i].AvailableRentBikesDetail.GeneralBikes}<br />
-                      {stationNearbyBikes[i].AvailableRentBikesDetail.ElectricBikes > 0 ? <>電輔:{stationNearbyBikes[i].AvailableRentBikesDetail.ElectricBikes}<br /></> : <></>}
-                      空位:{stationNearbyBikes[i].AvailableReturnBikes}<br />
-                    </>
-                  )
-                  :
-                  stationNearbyBikes[i].ServiceStatus === 0 ?
-                    (
-                      <>停止營運</>
-                    )
-                    : (<>暫停營運</>)
-              ) : (
-                <CircularProgress size="1rem" />
-              )}
-            </p>
-            <Link to={`/bike/station/?uid=${stationNearby[i].StationUID}`}>詳細資料</Link>
-
-
-          </>
+          popup: stationNearby[i].StationName.Zh_tw.replace("_", " ")
         }
       )
     }
@@ -275,19 +261,65 @@ function BikeRoot() {
 
           </Grid>
         </Box>
-
         <p></p>
-
-        <LeafletMap
-          center={[23.75518176611264, 120.9406086935125]}
-          style={11}
-          zoom={11}
+        <MapContainer
+          ref={mymap}
           scrollWheelZoom={false}
-          onDragendCallBack={onMapDragendCallBack}
-          setRef={setMymap}
-          markers={currentMarks}
-        />
-
+          center={[23.75518176611264, 120.9406086935125]}
+          zoom={11}
+          style={{ width: "100%", height: "60vh" }}
+        >
+          <TileLayer
+            attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors${L.Browser.mobile ? "" : ""
+              }<br/>移動地圖來查看其他站點`}
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {locationMark}
+          <MapEvents />
+          {
+            stationNearby.length > 0 ?
+              stationNearby.map(function (res, index) {
+                return (
+                  <Marker
+                    eventHandlers={{
+                      click: (e) => {
+                        console.log('marker clicked', e)
+                      },
+                    }}
+                    key={"marker-" + index}
+                    position={[res.StationPosition.PositionLat, res.StationPosition.PositionLon]}
+                    icon={greenIcon}
+                  >
+                    <Popup>
+                      {res.StationName.Zh_tw.replace("_", " ")}
+                      <p>
+                        {stationNearbyBikes[index] ? (
+                          stationNearbyBikes[index].ServiceStatus === 1 ?
+                            (
+                              <>
+                                一般:{stationNearbyBikes[index].AvailableRentBikesDetail.GeneralBikes}<br />
+                                {stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes > 0 ? <>電輔:{stationNearbyBikes[index].AvailableRentBikesDetail.ElectricBikes}<br /></> : <></>}
+                                空位:{stationNearbyBikes[index].AvailableReturnBikes}<br />
+                              </>
+                            )
+                            :
+                            stationNearbyBikes[index].ServiceStatus === 0 ?
+                              (
+                                <>停止營運</>
+                              )
+                              : (<>暫停營運</>)
+                        ) : (
+                          <CircularProgress size="1rem" />
+                        )}
+                      </p>
+                      <Link to={`/bike/station/?uid=${res.StationUID}`}>詳細資料</Link>
+                    </Popup>
+                  </Marker>
+                )
+              })
+              : <></>
+          }
+        </MapContainer>
         <p></p>
         <Box sx={{ width: "100%", m: 0, p: 0 }}>
           <Card sx={{ mt: 0, pt: 0 }}>
