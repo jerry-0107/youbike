@@ -56,7 +56,7 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
     React.useEffect(() => {
         setIsChecked(isContainedInFavoriteList(stationUID));
         console.log("isContainedInFavoriteList ?", isContainedInFavoriteList(stationUID))
-    }, [])
+    }, [stationUID])
 
 
 
