@@ -34,7 +34,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { YouBikeImage } from "../components/youbikeImage";
 
 function BikeRoot() {
-  const [mymap, setMymap] = React.useState();
+  const mymap = React.useRef();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogOpen2, setDialogOpen2] = React.useState(false);
 
