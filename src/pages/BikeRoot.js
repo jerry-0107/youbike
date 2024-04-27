@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TopAppBar } from '../TopBar';
+import { TopAppBar } from '../components/topBar';
 import getData from "../getData";
 import { Box, Autocomplete, TextField, Button } from "@mui/material";
 import Card from '@mui/material/Card';
@@ -31,7 +31,7 @@ import { yellow } from "@mui/material/colors";
 import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
-import { YouBikeImage } from "../youbikeImage";
+import { YouBikeImage } from "../components/youbikeImage";
 
 function BikeRoot() {
   const mymap = React.useRef();
