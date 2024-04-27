@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TopAppBar } from '../components/topBar';
+import { TopAppBar } from '../TopBar';
 import getData from "../getData";
 import { Box, Autocomplete, TextField, Button } from "@mui/material";
 import Card from '@mui/material/Card';
@@ -31,7 +31,7 @@ import { yellow } from "@mui/material/colors";
 import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
-import { YouBikeImage } from "../components/youbikeImage";
+import { YouBikeImage } from "../youbikeImage";
 
 function BikeRoot() {
   const mymap = React.useRef();
@@ -58,10 +58,9 @@ function BikeRoot() {
   const [stationNearby, setStationNearby] = React.useState([]);
   const [stationNearbyBikes, setStationNearbyBikes] = React.useState([]);
 
-  const [locationMark, setLocationMark] = React.useState({ position: [0, 0], iconColor: "red", popup: "NULL" });
+  const [locationMark, setLocationMark] = React.useState(<></>);
 
   const [currentLocation, setCurrentLocation] = React.useState([0, 0])
-  const [currentMarks, setCurrentMarks] = React.useState([])
 
   const redIcon = new L.Icon({
     iconUrl:
@@ -139,11 +138,16 @@ function BikeRoot() {
       //loc.coords.longitude
       console.log(loc);
       setStationNearbyBtn(<></>);
-      setLocationMark({
-        position: [loc.coords.latitude, loc.coords.longitude],
-        iconColor: "red",
-        popup: "你的位置"
-      });
+      setLocationMark(
+        <>
+          <Marker
+            position={[loc.coords.latitude, loc.coords.longitude]}
+            icon={redIcon}
+          >
+            <Popup>你的位置</Popup>
+          </Marker>
+        </>
+      );
       mymap.current.setView([loc.coords.latitude, loc.coords.longitude], 16)
       getNearByBikeData(loc.coords.latitude, loc.coords.longitude)
     }
@@ -208,24 +212,6 @@ function BikeRoot() {
       setMoreData({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
     }
   }, [stationNearby, stationNearbyBikes])
-
-  React.useEffect(() => {
-    setCurrentMarks([])
-    let markerList = []
-    for (let i = 0; i < stationNearby.length; i++) {
-      markerList.push(
-        {
-          position: [stationNearby[i].StationPosition.PositionLat, stationNearby[i].StationPosition.PositionLon],
-          iconColor: "green",
-          popup: stationNearby[i].StationName.Zh_tw.replace("_", " ")
-        }
-      )
-    }
-    if (locationMark.popup !== "NULL") {
-      markerList.push(locationMark)
-    }
-    setCurrentMarks(markerList)
-  }, [locationMark, stationNearby])
 
   return (
     <>
