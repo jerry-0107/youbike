@@ -7,6 +7,8 @@ import { Typography } from '@mui/material';
 import { Paper } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
+import { red, grey, blue, deepPurple, } from '@mui/material/colors';
+
 
 export function StationSlide() {
 
@@ -70,6 +72,36 @@ export function StationSlide() {
 
     return (
         <>
+
+            <style>
+                .splide__pagination__page {'{'}
+                background: {blue[700]} !important;
+                z-index: 1;
+                {'}'}
+
+                .splide__pagination__page:hover {'{'}
+                background: {blue[200]} !important;
+                -webkit-transform: scale(1.4);
+                transform: scale(1.4);
+                z-index: 1;
+                {'}'}
+
+                .splide__pagination__page.is-active {'{'}
+                background: {blue[200]} !important;
+                -webkit-transform: scale(1.4);
+                transform: scale(1.4);
+                z-index: 1;
+                {'}'}
+
+                .splide__arrow svg :hover {"{"}
+                fill: blue[200];
+                height: 1.2em;
+                width: 1.2em;
+                {"}"}
+
+            </style>
+
+
             {slideData.length < 1 ? <></> :
                 <Splide options={
                     {
@@ -78,7 +110,7 @@ export function StationSlide() {
                         perMove: 1,
                         drag: 'free',
                         snap: true,
-                        autoplay: true,
+                        // autoplay: true,
                     }
                 }
 
