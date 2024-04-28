@@ -31,7 +31,7 @@ export function StationSlide() {
         var FavoriteData = getFavoriteList()
         for (let i = 0; i < FavoriteData.length; i++) {
             getData(
-                `https://tdx.transportdata.tw/api/basic/v2/Bike/Availability/City/${getCityName(UrlParam("uid"))}?%24filter=StationUID%20eq%20%27${UrlParam("uid")}%27&%24format=JSON`,
+                `https://tdx.transportdata.tw/api/basic/v2/Bike/Availability/City/${getCityName(FavoriteData[i].uid)}?%24filter=StationUID%20eq%20%27${FavoriteData[i].uid}%27&%24format=JSON`,
                 (res) => { slideData.push({ name: FavoriteData[i].name, bikes: res }) },
                 (...errors) => { }
             )
