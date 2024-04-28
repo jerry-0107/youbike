@@ -21,14 +21,15 @@ var sql_Connect = mysql.createPool({
   connectionLimit: 15
 });
 
+
 app.post(/^\/api\/get/, async (req, res) => {
 
   if (apikey === "") {
     await getApiKeyFromDB(
       function (_apikey) {
         apikey = _apikey
-        console.log(_apikey)
-        console.log(req.body.apiurl)
+        // console.log(_apikey)
+        // console.log(req.body.apiurl)
         fetch(req.body.apiurl, {
           method: "GET",
           headers: {
@@ -41,8 +42,8 @@ app.post(/^\/api\/get/, async (req, res) => {
     )
   } else {
 
-    console.log(apikey)
-    console.log(req.body.apiurl)
+    // console.log(apikey)
+    // console.log(req.body.apiurl)
     fetch(req.body.apiurl, {
       method: "GET",
       headers: {

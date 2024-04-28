@@ -40,9 +40,8 @@ export function SearchField({ location, useAinsteadOfLink, defaultValue, setIsLo
         >
             <FormControl sx={{ flexGrow: 1 }} error={inputError && !keyword}>
                 <InputBase
-
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="搜尋站點"
+                    placeholder={inputError && !keyword ? "搜尋站點 *請填寫這個欄位*" : "搜尋站點"}
                     inputProps={{ 'aria-label': '搜尋站點' }}
                     value={keyword} onInput={(e) => setKeyword(e.target.value)}
                 />

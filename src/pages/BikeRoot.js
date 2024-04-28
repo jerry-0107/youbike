@@ -1,12 +1,10 @@
 import * as React from "react";
 import { TopAppBar } from '../components/topBar';
 import getData from "../getData";
-import { Box, Autocomplete, TextField, Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { Alert } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Paper } from "@mui/material";
 import "leaflet/dist/leaflet.css";
@@ -17,13 +15,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { ConstructionOutlined } from "@mui/icons-material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
 import { SearchField } from "../components/searchField";
 import Chip from '@mui/material/Chip';
@@ -32,7 +23,7 @@ import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import { YouBikeImage } from "../components/youbikeImage";
-import { StationSlide } from "../components/homeSlide";
+import { StationSlide } from "../components/favoriteSlide";
 
 function BikeRoot() {
   const mymap = React.useRef();

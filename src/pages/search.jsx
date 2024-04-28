@@ -59,7 +59,7 @@ export function Search() {
   }, [])
   return (
     <>
-      <TopAppBar title="公共自行車" isLoading={isLoading}></TopAppBar>
+      <TopAppBar title="搜尋站點" isLoading={isLoading}></TopAppBar>
       <Box sx={{ p: 3 }}>
         <SearchField useAinsteadOfLink={true} defaultValue={[UrlParam("q"), UrlParam("city")]} setIsLoading={setIsLoading} />
         <div>

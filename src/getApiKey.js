@@ -1,4 +1,4 @@
-import * as React from 'react'
+
 
 export async function getapikey(callback) {
     var tdxLogin = {
