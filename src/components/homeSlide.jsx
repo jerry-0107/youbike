@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import Box from '@mui/material/Box';
 import getData from '../getData';
+import { UrlParam } from '../urlParam';
 
 export function StationSlide() {
     const [slideData, setSlideData] = React.useState([])
