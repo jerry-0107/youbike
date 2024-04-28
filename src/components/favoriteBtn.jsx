@@ -4,6 +4,7 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import { pink } from '@mui/material/colors';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
@@ -58,6 +59,8 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
     setIsChecked(isContainedInFavoriteList(stationUID));
     console.log("isContainedInFavoriteList ?", isContainedInFavoriteList(stationUID))
   }, [stationUID])
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
   const theCheckBox = (
     <Checkbox {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} sx={{
@@ -86,11 +89,7 @@ export default function FavoriteBtn({ stationName, stationUID, options, isInTopB
 
   return (
     <Box sx={{ display: isInTopBar ? "block" : { xs: 'none', sm: 'block' } }}>
-      {
-        useMediaQuery((theme) => theme.breakpoints.up('sm')) ?
-          <FormControlLabel control={theCheckBox} label={isChecked ? "從最愛移除" : "加入最愛"} /> :
-          theCheckBox
-      }
+      {theCheckBox}
 
     </Box>
   );
