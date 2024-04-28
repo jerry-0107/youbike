@@ -25,7 +25,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SearchField } from "../searchField";
+import { SearchField } from "../components/searchField";
 import Chip from '@mui/material/Chip';
 import { yellow } from "@mui/material/colors";
 

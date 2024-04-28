@@ -25,13 +25,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SearchField } from "../searchField";
+import { SearchField } from "../components/searchField";
 import Chip from '@mui/material/Chip';
 import { yellow } from "@mui/material/colors";
 import LocationOffIcon from '@mui/icons-material/LocationOff';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import { YouBikeImage } from "../components/youbikeImage";
+import { StationSlide } from "../components/homeSlide";
 
 function BikeRoot() {
   const mymap = React.useRef();
@@ -218,6 +219,10 @@ function BikeRoot() {
       <TopAppBar title="YouBike 站點查詢" isLoading={isLoading} />
       <Box sx={{ p: 3 }}>
         <SearchField location={currentLocation} setIsLoading={setIsLoading} />
+        <p></p>
+        <Box sx={{}}>
+          <StationSlide />
+        </Box>
         <p></p>
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>

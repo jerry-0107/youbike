@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { SearchField } from '../searchField';
+import { SearchField } from '../components/searchField';
 import { UrlParam } from '../urlParam';
 import { TopAppBar } from '../components/topBar';
 import { Box } from '@mui/material';
