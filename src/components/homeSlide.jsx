@@ -2,10 +2,11 @@ import * as React from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import Box from '@mui/material/Box';
 import getData from '../getData';
-import { UrlParam } from '../urlParam';
+import '@splidejs/react-splide/css';
+import { Typography } from '@mui/material';
 
 export function StationSlide() {
-    const [slideData, setSlideData] = React.useState([])
+    var slideData = []
 
     function getFavoriteList() {
         var favoriteStations = JSON.parse(localStorage.getItem("favoriteStations"))
@@ -32,7 +33,7 @@ export function StationSlide() {
         for (let i = 0; i < FavoriteData.length; i++) {
             getData(
                 `https://tdx.transportdata.tw/api/basic/v2/Bike/Availability/City/${getCityName(FavoriteData[i].uid)}?%24filter=StationUID%20eq%20%27${FavoriteData[i].uid}%27&%24format=JSON`,
-                (res) => { slideData.push({ name: FavoriteData[i].name, bikes: res }) },
+                (res) => { slideData.push({ name: FavoriteData[i].name, bikes: res }); console.log(slideData) },
                 (...errors) => { }
             )
         }
@@ -48,11 +49,17 @@ export function StationSlide() {
         <>
             {slideData.length < 1 ? <>添加站點到我的最愛之後，就會顯示在這裡</> :
                 <Splide>
-                    <SplideSlide>
-                        {slideData.map((d, i) => {
-                            <p>{d.name}</p>
-                        })}
-                    </SplideSlide>
+
+                    {slideData.map((d, i) => {
+                        return (
+                            <SplideSlide>
+                                <Typography textAlign={"center"} variant='h5'>{d.name}</Typography>
+                                <p>一般:{-1}</p>
+                                <p>電輔:{-1}</p>
+                                <p>空位:{-1}</p>
+                            </SplideSlide>
+                        )
+                    })}
                 </Splide>
             }
         </>
