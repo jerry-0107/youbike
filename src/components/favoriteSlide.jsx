@@ -3,7 +3,7 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import "@splidejs/splide/dist/css/themes/splide-sea-green.min.css"
 import getData from '../getData';
 import '@splidejs/react-splide/css';
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { Paper } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
@@ -52,7 +52,7 @@ export function StationSlide() {
                 try {
                     getData(
                         `https://tdx.transportdata.tw/api/basic/v2/Bike/Availability/City/${getCityName(FavoriteData[i].uid)}?%24filter=StationUID%20eq%20%27${FavoriteData[i].uid}%27&%24format=JSON`,
-                        (res) => { setSlideData((old) => [...old, { name: FavoriteData[i].name, bikes: res }]); console.log(slideData) },
+                        (res) => { setSlideData((old) => [...old, { name: FavoriteData[i].name, bikes: res, uid: FavoriteData[i].uid }]); console.log(slideData) },
                         (...errors) => { }
                     )
                 } catch {
@@ -93,7 +93,7 @@ export function StationSlide() {
                 z-index: 1;
                 {'}'}
 
-                .splide__arrow svg :hover {"{"}
+                .splide__arrow svg:hover {"{"}
                 fill: blue[200];
                 height: 1.2em;
                 width: 1.2em;
@@ -140,7 +140,7 @@ export function StationSlide() {
                             <GridItem sx={{ m: 1, textAlign: 'center', display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 <div>
                                     <Typography variant='h5'>顯示更多 </Typography>
-                                    <p>前往<Link to={"/favorite"}>我的最愛</Link></p>
+                                    <Button component={Link} to={"/favorite"}>前往我的最愛</Button>
                                 </div>
                             </GridItem>
                         </SplideSlide>
