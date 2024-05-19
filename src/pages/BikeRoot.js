@@ -33,7 +33,7 @@ function BikeRoot() {
 
   const [isLoading, setIsLoading] = React.useState(false)
 
-  const [moreData, setMoreData] = React.useState({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
+  const [moreData, setMoreData] = React.useState({ moreBike: { stationName: "NULL", bikes: 0, uid: "NULL" }, moreSpace: { stationName: "NULL", space: 0, uid: "NULL" } })
 
   const [stationNearbyBtn, setStationNearbyBtn] = React.useState(
     <>
@@ -177,7 +177,7 @@ function BikeRoot() {
 
   React.useEffect(() => {
     if (stationNearby.length > 0 && stationNearbyBikes.length > 0 && stationNearby.length === stationNearbyBikes.length) {
-      console.log(stationNearby, stationNearbyBikes, "000")
+      //  console.log(stationNearby, stationNearbyBikes, "000")
       var moreBike = 0, moreSpace = 0;
       var theMoreBikeStation = [], theMoreSpaceStation = []
       for (let i = 0; i < stationNearbyBikes.length; i++) {
@@ -185,23 +185,25 @@ function BikeRoot() {
           if (stationNearbyBikes[i].AvailableRentBikes > moreBike) {
             theMoreBikeStation[0] = stationNearby[i].StationName.Zh_tw
             theMoreBikeStation[1] = stationNearbyBikes[i].AvailableRentBikes
+            theMoreBikeStation[2] = stationNearbyBikes[i].StationUID
             moreBike = stationNearbyBikes[i].AvailableRentBikes
           }
           if (stationNearbyBikes[i].AvailableReturnBikes > moreSpace) {
             theMoreSpaceStation[0] = stationNearby[i].StationName.Zh_tw
             theMoreSpaceStation[1] = stationNearbyBikes[i].AvailableReturnBikes
+            theMoreBikeStation[2] = stationNearbyBikes[i].StationUID
             moreSpace = stationNearbyBikes[i].AvailableReturnBikes
           }
         }
       }
       if (theMoreBikeStation.length > 0) {
-        setMoreData({ moreBike: { stationName: theMoreBikeStation[0], bikes: theMoreBikeStation[1] }, moreSpace: { stationName: theMoreSpaceStation[0], space: theMoreSpaceStation[1] } })
+        setMoreData({ moreBike: { stationName: theMoreBikeStation[0], bikes: theMoreBikeStation[1], uid: theMoreBikeStation[2] }, moreSpace: { stationName: theMoreSpaceStation[0], space: theMoreSpaceStation[1], uid: theMoreSpaceStation[2] } })
       }
       else {
-        setMoreData({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
+        setMoreData({ moreBike: { stationName: "NULL", bikes: 0, uid: "NULL" }, moreSpace: { stationName: "NULL", space: 0, uid: "NULL" } })
       }
     } else {
-      setMoreData({ moreBike: { stationName: "NULL", bikes: 0 }, moreSpace: { stationName: "NULL", space: 0 } })
+      setMoreData({ moreBike: { stationName: "NULL", bikes: 0, uid: "NULL" }, moreSpace: { stationName: "NULL", space: 0, uid: "NULL" } })
     }
   }, [stationNearby, stationNearbyBikes])
 
@@ -222,10 +224,11 @@ function BikeRoot() {
                 <YouBikeImage src='/youbike/YouBike2.0.svg' style={{ height: "2.5em" }} alt='可借車輛' /><br /><b>車輛最多</b><br />
                 {moreData.moreBike.stationName == "NULL" ? <>無資料</> :
                   <>{moreData.moreBike.stationName.split("_").length < 2 ? <>
-                    <Typography >{moreData.moreBike.stationName.split("_")[0]}</Typography>
+                    <Typography noWrap component={Link} to={`/bike/station/?uid=${moreData.moreBike.uid}`} sx={{ color: "currentColor" }}>{moreData.moreBike.stationName.split("_")[0]}</Typography>
                   </> : <>
-                    <Typography >{moreData.moreBike.stationName.split("_")[0]} {moreData.moreBike.stationName.split("_")[1]}</Typography>
-                  </>}<Typography >{moreData.moreBike.bikes}輛車</Typography></>}
+                    <Typography noWrap component={Link} to={`/bike/station/?uid=${moreData.moreBike.uid}`} sx={{ color: "currentColor" }}>{moreData.moreBike.stationName.split("_")[1]}</Typography>
+                  </>}
+                    <Typography >{moreData.moreBike.bikes}輛車</Typography></>}
 
               </GridItem>
             </Grid>
@@ -233,10 +236,11 @@ function BikeRoot() {
               <GridItem>
                 <YouBikeImage src='/youbike/2.0-dock.svg' style={{ height: "2.5em" }} alt='可還空位' /><br /><b>空位最多</b><br />
                 {moreData.moreSpace.stationName == "NULL" ? <>無資料</> : <>{moreData.moreSpace.stationName.split("_").length < 2 ? <>
-                  <Typography >{moreData.moreSpace.stationName.split("_")[0]}</Typography>
+                  <Typography noWrap component={Link} to={`/bike/station/?uid=${moreData.moreSpace.uid}`} sx={{ color: "currentColor" }}>{moreData.moreSpace.stationName.split("_")[0]}</Typography>
                 </> : <>
-                  <Typography >{moreData.moreSpace.stationName.split("_")[0]} {moreData.moreSpace.stationName.split("_")[1]}</Typography>
-                </>}<Typography >{moreData.moreSpace.space}個空位</Typography></>}
+                  <Typography noWrap component={Link} to={`/bike/station/?uid=${moreData.moreSpace.uid}`} sx={{ color: "currentColor" }}>{moreData.moreSpace.stationName.split("_")[1]}</Typography>
+                </>}
+                  <Typography >{moreData.moreSpace.space}個空位</Typography></>}
               </GridItem>
 
             </Grid>
