@@ -25,6 +25,7 @@ var sql_Connect = mysql.createPool({
 
 
 
+
 app.post(/^\/api\/get/, async (req, res) => {
 
   if (apikey.length < 1) {
@@ -47,17 +48,24 @@ app.post(/^\/api\/get/, async (req, res) => {
       }
     )
   } else {
+    console.log(`now we have ${apikey.length} api keys , and this time we were using the #${apikey_index}`)
 
     // console.log(apikey)
     // console.log(req.body.apiurl)
     fetch(req.body.apiurl, {
       method: "GET",
       headers: {
-        "authorization": "Bearer " + apikey,
+        "authorization": "Bearer " + apikey[apikey_index],
       }
 
     }).then(r => r.json())
       .then(r => res.send(r))
+      .catch(err => {
+        res.send("error:" + JSON.stringify(err))
+        console.log(apikey_index, err)
+      })
+    if (apikey_index < 2) { apikey_index++ }
+    else { apikey_index = 0 }
   }
 })
 
@@ -66,7 +74,7 @@ app.get('*', (req, res) => {
 })
 
 async function getApiKeyFromDB(callback) {
-  var temp = ""
+  var temp = []
   sql_Connect.getConnection(async function (err, connection) {
     connection.query(`
       SELECT * FROM APIkey
@@ -75,6 +83,7 @@ async function getApiKeyFromDB(callback) {
       console.log(results[0]);
       temp = [results[0].apiKey, results[1].apiKey, results[2].apiKey];
       connection.release();
+      console.log(temp)
       callback(temp)
       return temp;
     })
@@ -82,9 +91,10 @@ async function getApiKeyFromDB(callback) {
   return temp
 }
 
-function getApiKeyFromTDX() {
+async function getApiKeyFromTDX() {
 
   function updateKeys(token) {
+    // console.log(token)
     if (!token) { console.log("TOKEN ERROR"); return }
     sql_Connect.getConnection(function (err, connection3) {
       connection3.query(`
@@ -98,6 +108,7 @@ function getApiKeyFromTDX() {
           apikey.push(token)
           console.log("API KEY 取得成功")
           console.log("[CRON][SQL TEST] insert SQL data : SUCCESS")
+          console.log(apikey)
         }
         connection3.release()
       })
@@ -132,12 +143,12 @@ function getApiKeyFromTDX() {
     {
       grant_type: "client_credentials",
       client_id: "jerry20200815-3a261775-221c-47b3",
-      client_secret: "a92b37e8-3b85-4cea-a2a5-7757e090fcd3"
+      client_secret: "82b0d523-4d14-4b33-be34-79031f7de093"
     },
     {
       grant_type: "client_credentials",
       client_id: "jerry20200815-fbe3a182-d6be-4902",
-      client_secret: "c8b4f386-e233-40c8-8fff-728dd6158aa7"
+      client_secret: "97bc5e9c-c49a-4b36-985a-01454e408699"
     }
   ]
 
@@ -148,7 +159,7 @@ function getApiKeyFromTDX() {
       client_id: loginData[i].client_id,
       client_secret: loginData[i].client_secret
     };
-    fetch("https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token", {
+    await fetch("https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -157,13 +168,20 @@ function getApiKeyFromTDX() {
     })
       .then(response => response.json())
       .then(data => {
+        console.log(i, data)
+        console.log(i, "--processing api keys.")
+
         if (i < 1) {
+          console.log(i, "--deleting old api keys.")
+
           deletekeys(
             updateKeys,
             data.access_token
           )
 
         } else {
+          console.log(i, "--appending api keys.")
+
           updateKeys(data.access_token)
         }
       })
@@ -176,6 +194,7 @@ function getApiKeyFromTDX() {
 var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
   getApiKeyFromTDX()
 })
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
