@@ -33,6 +33,7 @@ app.post(/^\/api\/get/, async (req, res) => {
         apikey = _apikey
         // console.log(_apikey)
         // console.log(req.body.apiurl)
+        console.log(`now we have ${apikey.length} api keys , and this time we were using the #${apikey_index}`)
         fetch(req.body.apiurl, {
           method: "GET",
           headers: {
