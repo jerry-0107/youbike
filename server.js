@@ -81,8 +81,7 @@ async function getApiKeyFromDB(callback) {
   return temp
 }
 
-var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
-
+function getApiKeyFromTDX() {
 
   function updateKeys(token) {
     if (!token) { console.log("TOKEN ERROR"); return }
@@ -159,7 +158,7 @@ var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
       .then(data => {
         if (i < 1) {
           deletekeys(
-            updateKeys(),
+            updateKeys,
             data.access_token
           )
 
@@ -171,10 +170,15 @@ var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
         console.error("Error:", error);
       });
   }
+}
+
+var getApiKey = cron.schedule('0 0,6,12,18 * * *', () => {
+  getApiKeyFromTDX()
 })
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  getApiKeyFromTDX()
   getApiKey.start()
   console.log(`Server is running on port ${PORT}`);
 });
