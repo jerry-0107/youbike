@@ -191,7 +191,7 @@ function BikeRoot() {
           if (stationNearbyBikes[i].AvailableReturnBikes > moreSpace) {
             theMoreSpaceStation[0] = stationNearby[i].StationName.Zh_tw
             theMoreSpaceStation[1] = stationNearbyBikes[i].AvailableReturnBikes
-            theMoreBikeStation[2] = stationNearbyBikes[i].StationUID
+            theMoreSpaceStation[2] = stationNearbyBikes[i].StationUID
             moreSpace = stationNearbyBikes[i].AvailableReturnBikes
           }
         }
@@ -205,6 +205,7 @@ function BikeRoot() {
     } else {
       setMoreData({ moreBike: { stationName: "NULL", bikes: 0, uid: "NULL" }, moreSpace: { stationName: "NULL", space: 0, uid: "NULL" } })
     }
+    console.log(moreData)
   }, [stationNearby, stationNearbyBikes])
 
   return (

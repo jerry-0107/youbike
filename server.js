@@ -27,6 +27,8 @@ var sql_Connect = mysql.createPool({
 
 
 app.post(/^\/api\/get/, async (req, res) => {
+  console.log(req.body.apiurl)
+  console.log(`using api key #${apikey_index}`)
 
   if (apikey.length < 1) {
     await getApiKeyFromDB(
@@ -34,7 +36,6 @@ app.post(/^\/api\/get/, async (req, res) => {
         apikey = _apikey
         // console.log(_apikey)
         // console.log(req.body.apiurl)
-        console.log(`now we have ${apikey.length} api keys , and this time we were using the #${apikey_index}`)
         fetch(req.body.apiurl, {
           method: "GET",
           headers: {
@@ -48,7 +49,6 @@ app.post(/^\/api\/get/, async (req, res) => {
       }
     )
   } else {
-    console.log(`now we have ${apikey.length} api keys , and this time we were using the #${apikey_index}`)
 
     // console.log(apikey)
     // console.log(req.body.apiurl)
