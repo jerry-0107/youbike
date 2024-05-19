@@ -132,17 +132,17 @@ function getApiKeyFromTDX() {
     {
       grant_type: "client_credentials",
       client_id: "jerry20200815-3a261775-221c-47b3",
-      client_secret: "82b0d523-4d14-4b33-be34-79031f7de093"
+      client_secret: "a92b37e8-3b85-4cea-a2a5-7757e090fcd3"
     },
     {
       grant_type: "client_credentials",
       client_id: "jerry20200815-fbe3a182-d6be-4902",
-      client_secret: "97bc5e9c-c49a-4b36-985a-01454e408699"
+      client_secret: "c8b4f386-e233-40c8-8fff-728dd6158aa7"
     }
   ]
 
   for (let i = 0; i < loginData.length; i++) {
-
+    console.log(i, "--fetching api keys.")
     var tdxLogin = {
       grant_type: loginData[i].grant_type,
       client_id: loginData[i].client_id,
