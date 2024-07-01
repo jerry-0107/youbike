@@ -47,7 +47,8 @@ export function StationSlide() {
 
     React.useEffect(() => {
         async function _asyncFunc() {
-            const FavoriteData = await getFavoriteList()
+            var FavoriteData = await getFavoriteList()
+            FavoriteData = FavoriteData.reverse()
             for (let i = 0; i < 5; i++) {
                 try {
                     getData(
