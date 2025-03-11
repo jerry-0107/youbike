@@ -46,8 +46,8 @@ function App() {
   )
 
   React.useEffect(() => {
-    if (window.location.href.includes("vercel.app") || window.location.href.includes("onrender.com")) {
-      window.location.href = "https://youbike-production-0320.up.railway.app" + window.location.pathname + window.location.search
+    if (window.location.href.includes("vercel.app")) {
+      window.location.href = "https://public-transport-v3-1.onrender.com/bike"
     } else {
       setIsConnected(true)
     }
